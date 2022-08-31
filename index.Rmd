@@ -1,0 +1,395 @@
+---
+title: "GCTD Report Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: row
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(haven)
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(highcharter)
+library(plotly)
+library(DT)
+```
+
+```{r read}
+#Import Employee Data 
+employee <- read_dta("Employees Questionnaire.dta")
+employee <- as_factor(employee)
+employee$submissiondate <- as_date(employee$submissiondate)
+
+#Import Profile data
+profile <- read_dta("Profile Questionnaire.dta")
+profile <- as_factor(profile)
+profile$submissiondate <- as_date(profile$submissiondate)
+
+#Import Client Data
+client <- read_dta("Clients Questionnaire.dta")
+client <- as_factor(client)
+client$submissiondate <- as_date(client$submissiondate)
+
+#Import expected table
+expected_table <- read_csv("Table Expected.csv")
+```
+
+HOME
+=====================================
+
+Row
+-----------------------------------------------------------------------
+
+### EMOPLOYEE
+
+```{r}
+num_emp <- nrow(employee)
+valueBox(num_emp, icon = "fa-bar-chart")
+```
+
+### PROFILE
+
+```{r}
+num_profile <- nrow(profile)
+valueBox(num_profile, icon = "fa-bar-chart")
+
+```
+
+### CLIENT
+
+```{r}
+num_client <- nrow(client)
+valueBox(num_client,icon = "fa-bar-chart")
+
+```
+
+### TOTAL
+
+```{r}
+total_tool <- sum(num_emp,num_profile, num_client)
+
+valueBox(total_tool,icon = "fa-pencil", color = "orange")
+
+```
+
+### LAST UPDATED AT:  
+```{r}
+updated_time <- Sys.Date()
+
+valueBox(updated_time,icon = "fa-clock", color = "white")
+
+```
+
+```{r}
+tool_type <- c("Employee", "Profile", "Client")
+synced_tool <- c(num_emp,num_profile,num_client)
+
+```
+
+```{r Employee }
+Asnake_emp <- employee %>% filter(supervisor=="Asnake Getu") %>% nrow()
+Addis_emp <- employee %>% filter(supervisor=="Addis Mengistu") %>% nrow()
+Selamu_emp <- employee %>% filter(supervisor=="Selamu Bulado") %>% nrow()
+Solomon_emp <- employee %>% filter(supervisor=="Solomon Genore") %>% nrow()
+Natnael_emp <- employee %>% filter(supervisor=="Natnael Shewanes") %>% nrow()
+Hiwot_emp <- employee %>% filter(supervisor=="Hiwot Zelalem") %>% nrow()
+```
+
+```{r Profile }
+Asnake_pro <- profile %>% filter(supervisor=="Asnake Getu") %>% nrow()
+Addis_pro <- profile %>% filter(supervisor=="Addis Mengistu") %>% nrow()
+Selamu_pro <- profile %>% filter(supervisor=="Selamu Bulado") %>% nrow()
+Solomon_pro <- profile %>% filter(supervisor=="Solomon Genore") %>% nrow()
+Natnael_pro <- profile %>% filter(supervisor=="Natnael Shewanes") %>% nrow()
+Hiwot_pro <- profile %>% filter(supervisor=="Hiwot Zelalem") %>% nrow()
+```
+
+```{r Client}
+Asnake_cli <- client %>% filter(supervisor=="Asnake Getu") %>% nrow()
+Addis_cli <- client %>% filter(supervisor=="Addis Mengistu") %>% nrow()
+Selamu_cli <- client %>% filter(supervisor=="Selamu Bulado") %>% nrow()
+Solomon_cli <- client %>% filter(supervisor=="Solomon Genore") %>% nrow()
+Natnael_cli <- client %>% filter(supervisor=="Natnael Shewanes") %>% nrow()
+Hiwot_cli <- client %>% filter(supervisor=="Hiwot Zelalem") %>% nrow()
+```
+
+Column {.tabset}
+-----------------------------------------------------------------------
+### EMPLOYEE DATA TRAIND
+
+```{r}
+employee %>% select('submissiondate', 'supervisor') %>% 
+  arrange(submissiondate) %>% 
+  count( submissiondate,supervisor) %>% 
+  hchart('spline', hcaes(x = 'submissiondate', y = 'n', group = "supervisor"))
+
+```
+
+
+### CLIENT DATA TRAIND
+```{r}
+client %>% select('submissiondate', 'supervisor') %>% 
+  arrange(submissiondate) %>% 
+  count( submissiondate,supervisor) %>% 
+  hchart('spline', hcaes(x = 'submissiondate', y = 'n', group = "supervisor"))
+
+```
+
+
+### PROFILE DATA TRAIND
+```{r}
+profile %>% select('submissiondate', 'supervisor') %>% 
+  arrange(submissiondate) %>% 
+  count( submissiondate,supervisor) %>% 
+  hchart('spline', hcaes(x = 'submissiondate', y = 'n', group = "supervisor"))
+
+```
+
+
+Column 
+-----------------------------------------------------------------------
+
+### SUPERVISOR BY QUESTIONNAIRE TYPE
+
+```{r}
+sup_name <- c("Asnake", "Addis", "Selamu", "Solomon", "Natnael", "Hiwot")
+sup_emp <- c(Asnake_emp, Addis_emp, Selamu_emp, Solomon_emp, Natnael_emp, Hiwot_emp)
+sup_pro <- c(Asnake_pro, Addis_pro, Selamu_pro, Solomon_pro, Natnael_pro, Hiwot_pro)
+sup_cli <- c(Asnake_cli, Addis_cli, Selamu_cli, Solomon_cli, Natnael_cli, Hiwot_cli)
+
+data_sup <- data.frame(sup_name, sup_emp, sup_pro, sup_cli)
+data_sup <- data_sup %>% arrange(sup_cli)
+#to arrange
+data_sup$sup_name<- factor(data_sup$sup_name, levels=data_sup[["sup_name"]])
+
+#plot fig
+fig1 <- data_sup %>% plot_ly()
+fig1 <- fig1 %>% add_trace(x = ~sup_name, y = ~sup_emp, type = 'bar',  name = 'Employee', marker = list(color = '#0AA1DD'))
+fig1 <- fig1 %>% add_trace(x = ~sup_name, y = ~sup_cli, type = 'bar', name = 'Client', marker = list(color = '#006E7F'))
+fig1 <- fig1 %>% add_trace(x = ~sup_name, y = ~sup_pro, type = 'bar', name = 'Profile', marker = list(color = '#79DAE8'))
+fig1 <- fig1 %>% layout(xaxis = list(title = 'SUPERVISOR'), barmode = 'group')          
+fig1 <- fig1 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig1
+
+```
+
+
+
+### TOTAL SYNCED DATA BY REGION 
+```{r }
+employee %>% 
+  count(region) %>%arrange(-n) %>% 
+  hchart('bar', hcaes(x = 'region', y = 'n'))
+```
+
+### TOTAL SYNCED DATA BY QUESTIONNAIRE TYPE
+
+```{r}
+tool_type <- c("Employee", "Profile", "Client")
+synced_tool <- c(num_emp, num_profile, num_client)
+
+
+fig <- plot_ly(type='pie', labels= ~tool_type, values= ~synced_tool,
+               textinfo='label+percent',
+               insidetextorientation='radial',
+               marker = list(colors = c('#646FD4', '#DBDFFD', "#9BA3EB"))
+               
+               )
+fig
+
+```
+
+
+
+
+
+ADMNISTRATIVE LEVEL
+=====================================
+```{r expected}
+# Expected data
+supervisor <- c("Addis Mengistu",	"Asnake Getu",	"Hiwot Zelalem",	"Natnael Shewanes",	"Selamu Bulado","Solomon Genore")
+emp_fed_exp <- c(0,	0, 62.5, 62.5,	0,	0)
+emp_reg_exp <- c(0,	0, 52.5, 52.5, 210, 105)
+emp_zone_exp <- c(0,	0, 52.5, 52.5, 210, 105)
+emp_woreda_exp <- c(160, 160, 80, 80, 224, 256)
+client_exp <- c(240, 240, 120, 120, 336, 384)
+profile_exp <- c(56, 40, 63, 63, 114,109)
+
+df_expected <- data.frame(supervisor, emp_fed_exp, emp_reg_exp, emp_zone_exp, emp_woreda_exp, client_exp, profile_exp)
+
+# Actual data emp
+emp_fed_act <- employee %>% filter(org_level == "Federal") %>% 
+  group_by(supervisor) %>% summarise(count_fed_emp = n()) %>%
+  arrange(count_fed_emp)
+
+emp_reg_act <- employee %>% filter(org_level == "Regional") %>% 
+  group_by(supervisor) %>% summarise(count_reg_emp = n()) %>% 
+  arrange(count_reg_emp)
+
+emp_zone_act <- employee %>% filter(org_level == "Zonal") %>% 
+  group_by(supervisor) %>% summarise(count_zone_emp = n()) %>% 
+  arrange(count_zone_emp)
+
+emp_woreda_act <- employee %>% filter(org_level == "Woreda") %>% 
+  group_by(supervisor) %>% summarise(count_woreda_emp = n()) %>% 
+  arrange(count_woreda_emp)
+
+# Actual data client
+client_act <- client %>% group_by(supervisor) %>% summarise(count_client = n()) %>% arrange(count_client)
+
+# Actual data profile
+profile_act <- profile %>% group_by(supervisor) %>% summarise(count_profile = n()) %>% arrange(count_profile)
+
+# change to factor
+emp_fed_act$supervisor<- factor(emp_fed_act$supervisor, levels=emp_fed_act[["supervisor"]])
+emp_reg_act$supervisor<- factor(emp_reg_act$supervisor, levels=emp_reg_act[["supervisor"]])
+emp_zone_act$supervisor<- factor(emp_zone_act$supervisor, levels=emp_zone_act[["supervisor"]])
+emp_woreda_act$supervisor<- factor(emp_woreda_act$supervisor, levels=emp_woreda_act[["supervisor"]])
+client_act$supervisor<- factor(client_act$supervisor, levels=client_act[["supervisor"]])
+profile_act$supervisor<- factor(profile_act$supervisor, levels=profile_act[["supervisor"]])
+
+# Merge each df
+df_merge_fed <- inner_join(x = emp_fed_act, y = df_expected, by="supervisor")
+df_merge_reg <- inner_join(x = emp_reg_act, y = df_expected, by="supervisor")
+df_merge_zone <- inner_join(x = emp_zone_act, y = df_expected, by="supervisor")
+df_merge_woreda <- inner_join(x = emp_woreda_act, y = df_expected, by="supervisor")
+df_merge_client <- inner_join(x = client_act, y = df_expected, by="supervisor")
+df_merge_profile <- inner_join(x = profile_act, y = df_expected, by="supervisor")
+
+
+```
+
+Column 
+-----------------------------------------------------------------------
+### EMPLOYEE FEDERAL LEVEL EXPECTED AND ACTUAL
+
+```{r}
+
+#plot fig
+fig2 <- df_merge_fed %>% plot_ly()
+fig2 <- fig2 %>% add_trace(x = ~supervisor, y = ~count_fed_emp, type = 'bar',  name = 'Actual data', marker = list(color = '#0AA1DD'))
+fig2 <- fig2 %>% add_trace(x = ~supervisor, y = ~emp_fed_exp, type = 'bar', name = 'Expected data', marker = list(color = '#006E7F'))
+fig2 <- fig2 %>% layout(xaxis = list(title = 'SUPERVISOR'), barmode = 'group')          
+fig2 <- fig2 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig2
+
+```
+
+### EMPLOYEE REGIONAL LEVEL EXPECTED AND ACTUAL
+
+```{r}
+
+#plot fig
+fig3 <- df_merge_reg  %>% plot_ly()
+fig3 <- fig3 %>% add_trace(x = ~supervisor, y = ~count_reg_emp, type = 'bar',  name = 'Actual data', marker = list(color = '#0AA1DD'))
+fig3 <- fig3 %>% add_trace(x = ~supervisor, y = ~emp_reg_exp, type = 'bar', name = 'Expected data', marker = list(color = '#006E7F'))
+fig3 <- fig3 %>% layout(xaxis = list(title = 'SUPERVISOR'), barmode = 'group')          
+fig3 <- fig3 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig3
+
+```
+
+### EMPLOYEE ZONAL LEVEL EXPECTED AND ACTUAL
+
+```{r}
+
+#plot fig
+fig4 <- df_merge_zone  %>% plot_ly()
+fig4 <- fig4 %>% add_trace(x = ~supervisor, y = ~count_zone_emp, type = 'bar',  name = 'Actual data', marker = list(color = '#0AA1DD'))
+fig4 <- fig4 %>% add_trace(x = ~supervisor, y = ~emp_zone_exp, type = 'bar', name = 'Expected data', marker = list(color = '#006E7F'))
+fig4 <- fig4 %>% layout(xaxis = list(title = 'SUPERVISOR'), barmode = 'group')          
+fig4 <- fig4 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig4
+
+```
+
+Column 
+-----------------------------------------------------------------------
+### EMPLOYEE WOREDA LEVEL EXPECTED AND ACTUAL
+
+```{r}
+
+#plot fig
+fig5 <- df_merge_woreda %>% plot_ly()
+fig5 <- fig5 %>% add_trace(x = ~supervisor, y = ~count_woreda_emp, type = 'bar',  name = 'Actual data', marker = list(color = '#0AA1DD'))
+fig5 <- fig5 %>% add_trace(x = ~supervisor, y = ~emp_woreda_exp, type = 'bar', name = 'Expected data', marker = list(color = '#006E7F'))
+fig5 <- fig5 %>% layout(xaxis = list(title = 'SUPERVISOR'), barmode = 'group')          
+fig5 <- fig5 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig5
+
+```
+
+### CLIENT LEVEL EXPECTED AND ACTUAL
+
+```{r}
+
+#plot fig
+fig6 <- df_merge_client %>% plot_ly()
+fig6 <- fig6 %>% add_trace(x = ~supervisor, y = ~count_client, type = 'bar',  name = 'Actual data', marker = list(color = '#0AA1DD'))
+fig6 <- fig6 %>% add_trace(x = ~supervisor, y = ~client_exp, type = 'bar', name = 'Expected data', marker = list(color = '#006E7F'))
+fig6 <- fig6 %>% layout(xaxis = list(title = 'SUPERVISOR'), barmode = 'group')          
+fig6 <- fig6 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig6
+
+```
+
+### PROFILE LEVEL EXPECTED AND ACTUAL
+
+```{r}
+
+#plot fig
+fig7 <- df_merge_profile %>% plot_ly()
+fig7 <- fig7 %>% add_trace(x = ~supervisor, y = ~count_profile, type = 'bar',  name = 'Actual data', marker = list(color = '#0AA1DD'))
+fig7 <- fig7 %>% add_trace(x = ~supervisor, y = ~profile_exp, type = 'bar', name = 'Expected data', marker = list(color = '#006E7F'))
+fig7 <- fig7 %>% layout(xaxis = list(title = 'SUPERVISOR'), barmode = 'group')          
+fig7 <- fig7 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig7
+
+```
+
+ORG. LEVEL
+=====================================
+
+Column 
+-----------------------------------------------------------------------
+
+### EMPLOYEE DATA BY ORGANIZATION LEVEL
+```{r }
+employee %>% 
+  count(org_level, supervisor) %>%
+  hchart('column', hcaes(x = 'supervisor', y = 'n', group = 'org_level'))
+```
+
+### CLIENT DATA BY ORGANIZATION LEVEL
+```{r client}
+client %>% 
+  count(org_level, supervisor) %>%
+  hchart('column', hcaes(x = 'supervisor', y = 'n', group = 'org_level'))
+```
+
+### PROFILE DATA BY ORGANIZATION LEVEL
+```{r profile}
+profile %>% 
+  count(org_level, supervisor) %>%
+  hchart('column', hcaes(x = 'supervisor', y = 'n', group = 'org_level'))
+```
+
+Column 
+-----------------------------------------------------------------------
+
+### EXPECTED TABLE
+
+```{r }
+datatable(expected_table)
+```
+
