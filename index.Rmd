@@ -18,7 +18,8 @@ library(DT)
 ```
 
 ```{r read}
-#Import Employee Data 
+#Import Employee Data
+# 8/31
 employee <- read_dta("Employees Questionnaire.dta")
 employee <- as_factor(employee)
 employee$submissiondate <- as_date(employee$submissiondate)
@@ -207,14 +208,14 @@ fig
 
 
 
-ADMNISTRATIVE LEVEL
+ADMNIST. LEVEL
 =====================================
 ```{r expected}
 # Expected data
 supervisor <- c("Addis Mengistu",	"Asnake Getu",	"Hiwot Zelalem",	"Natnael Shewanes",	"Selamu Bulado","Solomon Genore")
 emp_fed_exp <- c(0,	0, 62.5, 62.5,	0,	0)
 emp_reg_exp <- c(0,	0, 52.5, 52.5, 210, 105)
-emp_zone_exp <- c(0,	0, 52.5, 52.5, 210, 105)
+emp_zone_exp <- c(80,	0, 100, 100, 80, 120)
 emp_woreda_exp <- c(160, 160, 80, 80, 224, 256)
 client_exp <- c(240, 240, 120, 120, 336, 384)
 profile_exp <- c(56, 40, 63, 63, 114,109)
@@ -387,7 +388,7 @@ profile %>%
 Column 
 -----------------------------------------------------------------------
 
-### EXPECTED TABLE
+### EXPECTED TABLE.
 
 ```{r }
 datatable(expected_table)
