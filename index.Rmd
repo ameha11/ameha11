@@ -97,6 +97,9 @@ Selamu_emp <- employee %>% filter(supervisor=="Selamu Bulado") %>% nrow()
 Solomon_emp <- employee %>% filter(supervisor=="Solomon Genore") %>% nrow()
 Natnael_emp <- employee %>% filter(supervisor=="Natnael Shewanes") %>% nrow()
 Hiwot_emp <- employee %>% filter(supervisor=="Hiwot Zelalem") %>% nrow()
+Besu_emp <- employee %>% filter(supervisor=="Besufikad Birhanu") %>% nrow()
+Habtamu_emp <- employee %>% filter(supervisor=="Habtamu Ayele") %>% nrow()
+Sisay_emp <- employee %>% filter(supervisor=="Sisay addis") %>% nrow()
 ```
 
 ```{r Profile }
@@ -106,6 +109,9 @@ Selamu_pro <- profile %>% filter(supervisor=="Selamu Bulado") %>% nrow()
 Solomon_pro <- profile %>% filter(supervisor=="Solomon Genore") %>% nrow()
 Natnael_pro <- profile %>% filter(supervisor=="Natnael Shewanes") %>% nrow()
 Hiwot_pro <- profile %>% filter(supervisor=="Hiwot Zelalem") %>% nrow()
+Besu_pro <- employee %>% filter(supervisor=="Besufikad Birhanu") %>% nrow()
+Habtamu_pro <- employee %>% filter(supervisor=="Habtamu Ayele") %>% nrow()
+Sisay_pro <- employee %>% filter(supervisor=="Sisay addis") %>% nrow()
 ```
 
 ```{r Client}
@@ -115,6 +121,9 @@ Selamu_cli <- client %>% filter(supervisor=="Selamu Bulado") %>% nrow()
 Solomon_cli <- client %>% filter(supervisor=="Solomon Genore") %>% nrow()
 Natnael_cli <- client %>% filter(supervisor=="Natnael Shewanes") %>% nrow()
 Hiwot_cli <- client %>% filter(supervisor=="Hiwot Zelalem") %>% nrow()
+Besu_cli <- client %>% filter(supervisor=="Besufikad Birhanu") %>% nrow()
+Habtamu_cli <- client %>% filter(supervisor=="Habtamu Ayele") %>% nrow()
+Sisay_cli <- client %>% filter(supervisor=="Sisay addis") %>% nrow()
 ```
 
 Column {.tabset}
@@ -156,10 +165,10 @@ Column
 ### SUPERVISOR BY QUESTIONNAIRE TYPE
 
 ```{r}
-sup_name <- c("Asnake", "Addis", "Selamu", "Solomon", "Natnael", "Hiwot")
-sup_emp <- c(Asnake_emp, Addis_emp, Selamu_emp, Solomon_emp, Natnael_emp, Hiwot_emp)
-sup_pro <- c(Asnake_pro, Addis_pro, Selamu_pro, Solomon_pro, Natnael_pro, Hiwot_pro)
-sup_cli <- c(Asnake_cli, Addis_cli, Selamu_cli, Solomon_cli, Natnael_cli, Hiwot_cli)
+sup_name <- c("Asnake", "Addis", "Selamu", "Solomon", "Natnael", "Hiwot", "Besufikad", "Habtamu", "Sisay")
+sup_emp <- c(Asnake_emp, Addis_emp, Selamu_emp, Solomon_emp, Natnael_emp, Hiwot_emp, Besu_emp, Habtamu_emp, Sisay_emp)
+sup_pro <- c(Asnake_pro, Addis_pro, Selamu_pro, Solomon_pro, Natnael_pro, Hiwot_pro, Besu_pro, Habtamu_pro, Sisay_pro)
+sup_cli <- c(Asnake_cli, Addis_cli, Selamu_cli, Solomon_cli, Natnael_cli, Hiwot_cli, Besu_cli, Habtamu_cli, Sisay_cli)
 
 data_sup <- data.frame(sup_name, sup_emp, sup_pro, sup_cli)
 data_sup <- data_sup %>% arrange(sup_cli)
