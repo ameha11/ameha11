@@ -100,6 +100,8 @@ Hiwot_emp <- employee %>% filter(supervisor=="Hiwot Zelalem") %>% nrow()
 Besu_emp <- employee %>% filter(supervisor=="Besufikad Birhanu") %>% nrow()
 Habtamu_emp <- employee %>% filter(supervisor=="Habtamu Ayele") %>% nrow()
 Sisay_emp <- employee %>% filter(supervisor=="Sisay addis") %>% nrow()
+Bekalu_emp <- employee %>% filter(supervisor=="Bekalu dibaba") %>% nrow()
+Henok_emp <- employee %>% filter(supervisor=="Henok Ayele") %>% nrow()
 ```
 
 ```{r Profile }
@@ -109,9 +111,11 @@ Selamu_pro <- profile %>% filter(supervisor=="Selamu Bulado") %>% nrow()
 Solomon_pro <- profile %>% filter(supervisor=="Solomon Genore") %>% nrow()
 Natnael_pro <- profile %>% filter(supervisor=="Natnael Shewanes") %>% nrow()
 Hiwot_pro <- profile %>% filter(supervisor=="Hiwot Zelalem") %>% nrow()
-Besu_pro <- employee %>% filter(supervisor=="Besufikad Birhanu") %>% nrow()
-Habtamu_pro <- employee %>% filter(supervisor=="Habtamu Ayele") %>% nrow()
-Sisay_pro <- employee %>% filter(supervisor=="Sisay addis") %>% nrow()
+Besu_pro <- profile %>% filter(supervisor=="Besufikad Birhanu") %>% nrow()
+Habtamu_pro <- profile %>% filter(supervisor=="Habtamu Ayele") %>% nrow()
+Sisay_pro <- profile %>% filter(supervisor=="Sisay addis") %>% nrow()
+Bekalu_pro <- profile%>% filter(supervisor=="Bekalu dibaba") %>% nrow()
+Henok_pro <- profile%>% filter(supervisor=="Henok Ayele") %>% nrow()
 ```
 
 ```{r Client}
@@ -124,6 +128,8 @@ Hiwot_cli <- client %>% filter(supervisor=="Hiwot Zelalem") %>% nrow()
 Besu_cli <- client %>% filter(supervisor=="Besufikad Birhanu") %>% nrow()
 Habtamu_cli <- client %>% filter(supervisor=="Habtamu Ayele") %>% nrow()
 Sisay_cli <- client %>% filter(supervisor=="Sisay addis") %>% nrow()
+Bekalu_cli <- client%>% filter(supervisor=="Bekalu dibaba") %>% nrow()
+Henok_cli <- client%>% filter(supervisor=="Henok Ayele") %>% nrow()
 ```
 
 Column {.tabset}
@@ -165,13 +171,13 @@ Column
 ### SUPERVISOR BY QUESTIONNAIRE TYPE
 
 ```{r}
-sup_name <- c("Asnake", "Addis", "Selamu", "Solomon", "Natnael", "Hiwot", "Besufikad", "Habtamu", "Sisay")
-sup_emp <- c(Asnake_emp, Addis_emp, Selamu_emp, Solomon_emp, Natnael_emp, Hiwot_emp, Besu_emp, Habtamu_emp, Sisay_emp)
-sup_pro <- c(Asnake_pro, Addis_pro, Selamu_pro, Solomon_pro, Natnael_pro, Hiwot_pro, Besu_pro, Habtamu_pro, Sisay_pro)
-sup_cli <- c(Asnake_cli, Addis_cli, Selamu_cli, Solomon_cli, Natnael_cli, Hiwot_cli, Besu_cli, Habtamu_cli, Sisay_cli)
+sup_name <- c("Asnake", "Addis", "Selamu", "Solomon", "Natnael", "Hiwot", "Besufikad", "Habtamu", "Sisay", "Bekalu", "Henok")
+sup_emp <- c(Asnake_emp, Addis_emp, Selamu_emp, Solomon_emp, Natnael_emp, Hiwot_emp, Besu_emp, Habtamu_emp, Sisay_emp, Bekalu_emp, Henok_emp)
+sup_pro <- c(Asnake_pro, Addis_pro, Selamu_pro, Solomon_pro, Natnael_pro, Hiwot_pro, Besu_pro, Habtamu_pro, Sisay_pro, Bekalu_pro, Henok_pro)
+sup_cli <- c(Asnake_cli, Addis_cli, Selamu_cli, Solomon_cli, Natnael_cli, Hiwot_cli, Besu_cli, Habtamu_cli, Sisay_cli, Bekalu_cli, Henok_cli)
 
 data_sup <- data.frame(sup_name, sup_emp, sup_pro, sup_cli)
-data_sup <- data_sup %>% arrange(sup_cli)
+data_sup <- data_sup %>% arrange(sup_emp)
 #to arrange
 data_sup$sup_name<- factor(data_sup$sup_name, levels=data_sup[["sup_name"]])
 
@@ -221,13 +227,13 @@ ADMNIST. LEVEL
 =====================================
 ```{r expected}
 # Expected data
-supervisor <- c("Addis Mengistu",	"Asnake Getu",	"Hiwot Zelalem",	"Natnael Shewanes",	"Selamu Bulado","Solomon Genore")
-emp_fed_exp <- c(0,	0, 62.5, 62.5,	0,	0)
-emp_reg_exp <- c(0,	0, 52.5, 52.5, 210, 105)
-emp_zone_exp <- c(80,	0, 100, 100, 80, 120)
-emp_woreda_exp <- c(160, 160, 80, 80, 224, 256)
-client_exp <- c(240, 240, 120, 120, 336, 384)
-profile_exp <- c(56, 40, 63, 63, 114,109)
+supervisor <- c("Addis Mengistu",	"Asnake Getu",	"Hiwot Zelalem",	"Natnael Shewanes",	"Selamu Bulado","Solomon Genore", "Besufikad", "Habtamu", "Sisay", "Bekalu", "Henok")
+emp_fed_exp <- c(0,	0, 62.5, 62.5,	0,	0, 0, 0, 0, 0, 0)
+emp_reg_exp <- c(0,	0, 52.5, 52.5, 210, 105, 105, 105, 105, 105, 315)
+emp_zone_exp <- c(80,	0, 100, 100, 80, 120, 80, 120, 80, 80, 80)
+emp_woreda_exp <- c(160, 160, 80, 80, 224, 256, 224, 192,192, 192, 224)
+client_exp <- c(240, 240, 120, 120, 336, 384, 336, 288, 288, 288, 336)
+profile_exp <- c(56, 40, 63, 63, 114,109, 93, 93, 85, 85, 199)
 
 df_expected <- data.frame(supervisor, emp_fed_exp, emp_reg_exp, emp_zone_exp, emp_woreda_exp, client_exp, profile_exp)
 
