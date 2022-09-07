@@ -16,6 +16,7 @@ library(lubridate)
 library(highcharter)
 library(plotly)
 library(DT)
+library(stringr)
 
 ```
 
@@ -281,13 +282,60 @@ emp_woreda_act$supervisor<- factor(emp_woreda_act$supervisor, levels=emp_woreda_
 client_act$supervisor<- factor(client_act$supervisor, levels=client_act[["supervisor"]])
 profile_act$supervisor<- factor(profile_act$supervisor, levels=profile_act[["supervisor"]])
 
-# Merge each df
+# ----Merge each type of questionnaire by actual and expected----#
 df_merge_fed <- inner_join(x = emp_fed_act, y = df_expected, by="supervisor")
+#rename sup name
+df_merge_fed <- df_merge_fed %>% mutate(supervisor = str_replace(supervisor,"Addis Mengistu", "Addis"), supervisor = str_replace(supervisor, "Asnake Getu", "Asnake"),
+supervisor = str_replace(supervisor, "Hiwot Zelalem", "Hiwot"), supervisor = str_replace(supervisor, "Natnael Shewanes", "Natnael"),
+supervisor = str_replace(supervisor, "Selamu Bulado", "Selamu"), supervisor = str_replace(supervisor, "Solomon Genore", "Solomon"), 
+supervisor = str_replace(supervisor, "Besufikad Birhanu", "Besufikad"), supervisor = str_replace(supervisor, "Habtamu Ayele", "Habtamu"), 
+supervisor = str_replace(supervisor, "Sisay addis", "Sisay"), supervisor = str_replace(supervisor, "Bekalu dibaba", "Bekalu"), 
+supervisor = str_replace(supervisor, "Henok Ayele", "Henok"), supervisor = str_replace(supervisor, "Belachew Mamuye", "Belachew"))
+
 df_merge_reg <- inner_join(x = emp_reg_act, y = df_expected, by="supervisor")
+#rename sup name
+df_merge_reg <- df_merge_reg %>% mutate(supervisor = str_replace(supervisor,"Addis Mengistu", "Addis"), supervisor = str_replace(supervisor, "Asnake Getu", "Asnake"),
+supervisor = str_replace(supervisor, "Hiwot Zelalem", "Hiwot"), supervisor = str_replace(supervisor, "Natnael Shewanes", "Natnael"),
+supervisor = str_replace(supervisor, "Selamu Bulado", "Selamu"), supervisor = str_replace(supervisor, "Solomon Genore", "Solomon"), 
+supervisor = str_replace(supervisor, "Besufikad Birhanu", "Besufikad"), supervisor = str_replace(supervisor, "Habtamu Ayele", "Habtamu"), 
+supervisor = str_replace(supervisor, "Sisay addis", "Sisay"), supervisor = str_replace(supervisor, "Bekalu dibaba", "Bekalu"), 
+supervisor = str_replace(supervisor, "Henok Ayele", "Henok"), supervisor = str_replace(supervisor, "Belachew Mamuye", "Belachew"))
+
 df_merge_zone <- inner_join(x = emp_zone_act, y = df_expected, by="supervisor")
+#rename sup name
+df_merge_zone<- df_merge_zone %>% mutate(supervisor = str_replace(supervisor,"Addis Mengistu", "Addis"), supervisor = str_replace(supervisor, "Asnake Getu", "Asnake"),
+supervisor = str_replace(supervisor, "Hiwot Zelalem", "Hiwot"), supervisor = str_replace(supervisor, "Natnael Shewanes", "Natnael"),
+supervisor = str_replace(supervisor, "Selamu Bulado", "Selamu"), supervisor = str_replace(supervisor, "Solomon Genore", "Solomon"), 
+supervisor = str_replace(supervisor, "Besufikad Birhanu", "Besufikad"), supervisor = str_replace(supervisor, "Habtamu Ayele", "Habtamu"), 
+supervisor = str_replace(supervisor, "Sisay addis", "Sisay"), supervisor = str_replace(supervisor, "Bekalu dibaba", "Bekalu"), 
+supervisor = str_replace(supervisor, "Henok Ayele", "Henok"), supervisor = str_replace(supervisor, "Belachew Mamuye", "Belachew"))
+
 df_merge_woreda <- inner_join(x = emp_woreda_act, y = df_expected, by="supervisor")
+#rename sup name
+df_merge_woreda <- df_merge_woreda %>% mutate(supervisor = str_replace(supervisor,"Addis Mengistu", "Addis"), supervisor = str_replace(supervisor, "Asnake Getu", "Asnake"),
+supervisor = str_replace(supervisor, "Hiwot Zelalem", "Hiwot"), supervisor = str_replace(supervisor, "Natnael Shewanes", "Natnael"),
+supervisor = str_replace(supervisor, "Selamu Bulado", "Selamu"), supervisor = str_replace(supervisor, "Solomon Genore", "Solomon"), 
+supervisor = str_replace(supervisor, "Besufikad Birhanu", "Besufikad"), supervisor = str_replace(supervisor, "Habtamu Ayele", "Habtamu"), 
+supervisor = str_replace(supervisor, "Sisay addis", "Sisay"), supervisor = str_replace(supervisor, "Bekalu dibaba", "Bekalu"), 
+supervisor = str_replace(supervisor, "Henok Ayele", "Henok"), supervisor = str_replace(supervisor, "Belachew Mamuye", "Belachew"))
+
 df_merge_client <- inner_join(x = client_act, y = df_expected, by="supervisor")
+#rename sup name
+df_merge_client<- df_merge_client %>% mutate(supervisor = str_replace(supervisor,"Addis Mengistu", "Addis"), supervisor = str_replace(supervisor, "Asnake Getu", "Asnake"),
+supervisor = str_replace(supervisor, "Hiwot Zelalem", "Hiwot"), supervisor = str_replace(supervisor, "Natnael Shewanes", "Natnael"),
+supervisor = str_replace(supervisor, "Selamu Bulado", "Selamu"), supervisor = str_replace(supervisor, "Solomon Genore", "Solomon"), 
+supervisor = str_replace(supervisor, "Besufikad Birhanu", "Besufikad"), supervisor = str_replace(supervisor, "Habtamu Ayele", "Habtamu"), 
+supervisor = str_replace(supervisor, "Sisay addis", "Sisay"), supervisor = str_replace(supervisor, "Bekalu dibaba", "Bekalu"), 
+supervisor = str_replace(supervisor, "Henok Ayele", "Henok"), supervisor = str_replace(supervisor, "Belachew Mamuye", "Belachew"))
+
 df_merge_profile <- inner_join(x = profile_act, y = df_expected, by="supervisor")
+#rename sup name
+df_merge_profile<- df_merge_profile %>% mutate(supervisor = str_replace(supervisor,"Addis Mengistu", "Addis"), supervisor = str_replace(supervisor, "Asnake Getu", "Asnake"),
+supervisor = str_replace(supervisor, "Hiwot Zelalem", "Hiwot"), supervisor = str_replace(supervisor, "Natnael Shewanes", "Natnael"),
+supervisor = str_replace(supervisor, "Selamu Bulado", "Selamu"), supervisor = str_replace(supervisor, "Solomon Genore", "Solomon"), 
+supervisor = str_replace(supervisor, "Besufikad Birhanu", "Besufikad"), supervisor = str_replace(supervisor, "Habtamu Ayele", "Habtamu"), 
+supervisor = str_replace(supervisor, "Sisay addis", "Sisay"), supervisor = str_replace(supervisor, "Bekalu dibaba", "Bekalu"), 
+supervisor = str_replace(supervisor, "Henok Ayele", "Henok"), supervisor = str_replace(supervisor, "Belachew Mamuye", "Belachew"))
 
 
 ```
