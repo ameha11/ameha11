@@ -9,28 +9,37 @@ output:
 ```{r setup, include=FALSE}
 library(flexdashboard)
 library(haven)
+library(plyr)
 library(tidyverse)
 library(dplyr)
 library(lubridate)
 library(highcharter)
 library(plotly)
 library(DT)
+
 ```
 
 ```{r read}
 #Import Employee Data
 # 8/31
 employee <- read_dta("Employees Questionnaire.dta")
+employee0 <- read_dta("Employees Questionnaire0.dta")
+employee <- rbind.fill(employee, employee0)
 employee <- as_factor(employee)
+
 employee$submissiondate <- as_date(employee$submissiondate)
 
 #Import Profile data
 profile <- read_dta("Profile Questionnaire.dta")
+profile0 <- read_dta("Profile Questionnaire0.dta")
+profile <- rbind.fill(profile, profile0)
 profile <- as_factor(profile)
 profile$submissiondate <- as_date(profile$submissiondate)
 
 #Import Client Data
 client <- read_dta("Clients Questionnaire.dta")
+client0 <- read_dta("Clients Questionnaire0.dta")
+client <- rbind.fill(client, client0)
 client <- as_factor(client)
 client$submissiondate <- as_date(client$submissiondate)
 
@@ -102,6 +111,7 @@ Habtamu_emp <- employee %>% filter(supervisor=="Habtamu Ayele") %>% nrow()
 Sisay_emp <- employee %>% filter(supervisor=="Sisay addis") %>% nrow()
 Bekalu_emp <- employee %>% filter(supervisor=="Bekalu dibaba") %>% nrow()
 Henok_emp <- employee %>% filter(supervisor=="Henok Ayele") %>% nrow()
+Belachew_emp <- employee %>% filter(supervisor=="Belachew Mamuye") %>% nrow()
 ```
 
 ```{r Profile }
@@ -116,6 +126,7 @@ Habtamu_pro <- profile %>% filter(supervisor=="Habtamu Ayele") %>% nrow()
 Sisay_pro <- profile %>% filter(supervisor=="Sisay addis") %>% nrow()
 Bekalu_pro <- profile%>% filter(supervisor=="Bekalu dibaba") %>% nrow()
 Henok_pro <- profile%>% filter(supervisor=="Henok Ayele") %>% nrow()
+Belachew_pro <- profile%>% filter(supervisor=="Belachew Mamuye") %>% nrow()
 ```
 
 ```{r Client}
@@ -130,6 +141,7 @@ Habtamu_cli <- client %>% filter(supervisor=="Habtamu Ayele") %>% nrow()
 Sisay_cli <- client %>% filter(supervisor=="Sisay addis") %>% nrow()
 Bekalu_cli <- client%>% filter(supervisor=="Bekalu dibaba") %>% nrow()
 Henok_cli <- client%>% filter(supervisor=="Henok Ayele") %>% nrow()
+Belachew_cli <- client%>% filter(supervisor=="Belachew Mamuye") %>% nrow()
 ```
 
 Column {.tabset}
@@ -171,10 +183,10 @@ Column
 ### SUPERVISOR BY QUESTIONNAIRE TYPE
 
 ```{r}
-sup_name <- c("Asnake", "Addis", "Selamu", "Solomon", "Natnael", "Hiwot", "Besufikad", "Habtamu", "Sisay", "Bekalu", "Henok")
-sup_emp <- c(Asnake_emp, Addis_emp, Selamu_emp, Solomon_emp, Natnael_emp, Hiwot_emp, Besu_emp, Habtamu_emp, Sisay_emp, Bekalu_emp, Henok_emp)
-sup_pro <- c(Asnake_pro, Addis_pro, Selamu_pro, Solomon_pro, Natnael_pro, Hiwot_pro, Besu_pro, Habtamu_pro, Sisay_pro, Bekalu_pro, Henok_pro)
-sup_cli <- c(Asnake_cli, Addis_cli, Selamu_cli, Solomon_cli, Natnael_cli, Hiwot_cli, Besu_cli, Habtamu_cli, Sisay_cli, Bekalu_cli, Henok_cli)
+sup_name <- c("Asnake", "Addis", "Selamu", "Solomon", "Natnael", "Hiwot", "Besufikad", "Habtamu", "Sisay", "Bekalu", "Henok", "Belachew")
+sup_emp <- c(Asnake_emp, Addis_emp, Selamu_emp, Solomon_emp, Natnael_emp, Hiwot_emp, Besu_emp, Habtamu_emp, Sisay_emp, Bekalu_emp, Henok_emp, Belachew_emp)
+sup_pro <- c(Asnake_pro, Addis_pro, Selamu_pro, Solomon_pro, Natnael_pro, Hiwot_pro, Besu_pro, Habtamu_pro, Sisay_pro, Bekalu_pro, Henok_pro, Belachew_pro)
+sup_cli <- c(Asnake_cli, Addis_cli, Selamu_cli, Solomon_cli, Natnael_cli, Hiwot_cli, Besu_cli, Habtamu_cli, Sisay_cli, Bekalu_cli, Henok_cli, Belachew_cli)
 
 data_sup <- data.frame(sup_name, sup_emp, sup_pro, sup_cli)
 data_sup <- data_sup %>% arrange(sup_emp)
@@ -198,7 +210,8 @@ fig1
 ### TOTAL SYNCED DATA BY REGION 
 ```{r }
 employee %>% 
-  count(region) %>%arrange(-n) %>% 
+  dplyr::count(region) %>%
+  arrange(-n) %>% 
   hchart('bar', hcaes(x = 'region', y = 'n'))
 ```
 
@@ -227,13 +240,13 @@ ADMNIST. LEVEL
 =====================================
 ```{r expected}
 # Expected data
-supervisor <- c("Addis Mengistu",	"Asnake Getu",	"Hiwot Zelalem",	"Natnael Shewanes",	"Selamu Bulado","Solomon Genore", "Besufikad", "Habtamu", "Sisay", "Bekalu", "Henok")
-emp_fed_exp <- c(0,	0, 62.5, 62.5,	0,	0, 0, 0, 0, 0, 0)
-emp_reg_exp <- c(0,	0, 52.5, 52.5, 210, 105, 105, 105, 105, 105, 315)
-emp_zone_exp <- c(80,	0, 100, 100, 80, 120, 80, 120, 80, 80, 80)
-emp_woreda_exp <- c(160, 160, 80, 80, 224, 256, 224, 192,192, 192, 224)
-client_exp <- c(240, 240, 120, 120, 336, 384, 336, 288, 288, 288, 336)
-profile_exp <- c(56, 40, 63, 63, 114,109, 93, 93, 85, 85, 199)
+supervisor <- c("Addis Mengistu",	"Asnake Getu",	"Hiwot Zelalem",	"Natnael Shewanes",	"Selamu Bulado","Solomon Genore", "Besufikad", "Habtamu", "Sisay", "Bekalu", "Henok", "Belachew")
+emp_fed_exp <- c(0,	0, 62.5, 62.5,	0,	0, 0, 0, 0, 0, 0, 0)
+emp_reg_exp <- c(0,	0, 52.5, 52.5, 210, 105, 105, 105, 105, 105, 315, 105)
+emp_zone_exp <- c(80,	0, 100, 100, 80, 120, 80, 120, 80, 80, 80, 80)
+emp_woreda_exp <- c(160, 160, 80, 80, 224, 256, 224, 192,192, 192, 224,96)
+client_exp <- c(240, 240, 120, 120, 336, 384, 336, 288, 288, 288, 336, 144)
+profile_exp <- c(56, 40, 63, 63, 114,109, 93, 93, 85, 85, 199, 61)
 
 df_expected <- data.frame(supervisor, emp_fed_exp, emp_reg_exp, emp_zone_exp, emp_woreda_exp, client_exp, profile_exp)
 
