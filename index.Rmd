@@ -240,7 +240,7 @@ ADMNIST. LEVEL
 =====================================
 ```{r expected}
 # Expected data
-supervisor <- c("Addis Mengistu",	"Asnake Getu",	"Hiwot Zelalem",	"Natnael Shewanes",	"Selamu Bulado","Solomon Genore", "Besufikad", "Habtamu", "Sisay", "Bekalu", "Henok", "Belachew")
+supervisor <- c("Addis Mengistu",	"Asnake Getu",	"Hiwot Zelalem",	"Natnael Shewanes",	"Selamu Bulado","Solomon Genore", "Besufikad Birhanu", "Habtamu Ayele", "Sisay addis", "Bekalu dibaba", "Henok Ayele", "Belachew Mamuye")
 emp_fed_exp <- c(0,	0, 62.5, 62.5,	0,	0, 0, 0, 0, 0, 0, 0)
 emp_reg_exp <- c(0,	0, 52.5, 52.5, 210, 105, 105, 105, 105, 105, 315, 105)
 emp_zone_exp <- c(80,	0, 100, 100, 80, 120, 80, 120, 80, 80, 80, 80)
@@ -252,26 +252,26 @@ df_expected <- data.frame(supervisor, emp_fed_exp, emp_reg_exp, emp_zone_exp, em
 
 # Actual data emp
 emp_fed_act <- employee %>% filter(org_level == "Federal") %>% 
-  group_by(supervisor) %>% summarise(count_fed_emp = n()) %>%
+  group_by(supervisor) %>% dplyr::summarise(count_fed_emp = n()) %>%
   arrange(count_fed_emp)
 
 emp_reg_act <- employee %>% filter(org_level == "Regional") %>% 
-  group_by(supervisor) %>% summarise(count_reg_emp = n()) %>% 
+  group_by(supervisor) %>% dplyr::summarise(count_reg_emp = n()) %>% 
   arrange(count_reg_emp)
 
 emp_zone_act <- employee %>% filter(org_level == "Zonal") %>% 
-  group_by(supervisor) %>% summarise(count_zone_emp = n()) %>% 
+  group_by(supervisor) %>% dplyr::summarise(count_zone_emp = n()) %>% 
   arrange(count_zone_emp)
 
 emp_woreda_act <- employee %>% filter(org_level == "Woreda") %>% 
-  group_by(supervisor) %>% summarise(count_woreda_emp = n()) %>% 
+  group_by(supervisor) %>% dplyr::summarise(count_woreda_emp = n()) %>% 
   arrange(count_woreda_emp)
 
 # Actual data client
-client_act <- client %>% group_by(supervisor) %>% summarise(count_client = n()) %>% arrange(count_client)
+client_act <- client %>% group_by(supervisor) %>% dplyr::summarise(count_client = n()) %>% arrange(count_client)
 
 # Actual data profile
-profile_act <- profile %>% group_by(supervisor) %>% summarise(count_profile = n()) %>% arrange(count_profile)
+profile_act <- profile %>% group_by(supervisor) %>% dplyr::summarise(count_profile = n()) %>% arrange(count_profile)
 
 # change to factor
 emp_fed_act$supervisor<- factor(emp_fed_act$supervisor, levels=emp_fed_act[["supervisor"]])
