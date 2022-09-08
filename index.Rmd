@@ -9,14 +9,14 @@ output:
 ```{r setup, include=FALSE}
 library(flexdashboard)
 library(haven)
-library(plyr)
+library(plyr)#append data set with different number of column  
 library(tidyverse)
 library(dplyr)
-library(lubridate)
+library(lubridate)#date & time
 library(highcharter)
 library(plotly)
-library(DT)
-library(stringr)
+library(DT)#data table
+library(stringr)#string replacement
 
 ```
 
