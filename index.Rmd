@@ -469,4 +469,3 @@ Column
 ```{r }
 datatable(expected_table)
 ```
-
