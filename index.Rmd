@@ -26,7 +26,7 @@ library(stringr)#string replacement
 employee <- read_dta("Employees Questionnaire.dta")
 employee0 <- read_dta("Employees Questionnaire0.dta")
 employee1 <- read_dta("Employees Questionnaire1.dta")
-employee <- rbind.fill(employee, employee0,employee1)
+employee <- rbind.fill(employee, employee0, employee1)
 employee <- as_factor(employee)
 
 employee$submissiondate <- as_date(employee$submissiondate)
@@ -34,14 +34,16 @@ employee$submissiondate <- as_date(employee$submissiondate)
 #Import Profile data
 profile <- read_dta("Profile Questionnaire.dta")
 profile0 <- read_dta("Profile Questionnaire0.dta")
-profile <- rbind.fill(profile, profile0)
+profile1 <- read_dta("Profile Questionnaire1.dta")
+profile <- rbind.fill(profile, profile0, profile1)
 profile <- as_factor(profile)
 profile$submissiondate <- as_date(profile$submissiondate)
 
 #Import Client Data
 client <- read_dta("Clients Questionnaire.dta")
 client0 <- read_dta("Clients Questionnaire0.dta")
-client <- rbind.fill(client, client0)
+client1 <- read_dta("Clients Questionnaire1.dta")
+client <- rbind.fill(client, client0,client1)
 client <- as_factor(client)
 client$submissiondate <- as_date(client$submissiondate)
 
