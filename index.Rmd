@@ -26,7 +26,7 @@ library(stringr)#string replacement
 employee <- read_dta("Employees Questionnaire.dta")
 employee0 <- read_dta("Employees Questionnaire0.dta")
 employee1 <- read_dta("Employees Questionnaire1.dta")
-employee <- rbind.fill(employee, employee0, employee1)
+employee <- rbind.fill(employee, employee0,employee1)
 employee <- as_factor(employee)
 
 employee$submissiondate <- as_date(employee$submissiondate)
