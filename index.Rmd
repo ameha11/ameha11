@@ -90,11 +90,11 @@ valueBox(total_tool,icon = "fa-pencil", color = "orange")
 ```
 
 ### LAST UPDATED AT:  
+
 ```{r}
 updated_time <- Sys.Date()
 
 valueBox(updated_time,icon = "fa-clock", color = "white")
-
 ```
 
 ```{r}
