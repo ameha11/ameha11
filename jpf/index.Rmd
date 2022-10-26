@@ -20,7 +20,7 @@ library(stringr)#string replacement
 library(webr)
 library(extrafont)
 
-#font_import()
+##font_import()
 ```
 
 ```{r }
