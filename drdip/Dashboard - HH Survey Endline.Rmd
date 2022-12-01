@@ -1,0 +1,379 @@
+---
+title: "DRDIP2 Report Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: row
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(haven)
+library(plyr)
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(highcharter)
+library(plotly)
+library(DT)
+library(stringr)
+
+```
+
+```{r}
+#Import HH Survey Endline Data
+hh_endline <- read_dta("C:/Users/Admin/Desktop/Backup/Documents/Survey - Projects/DRDIP II/Download Data/DRDIP_HH_Survey_2022_Endline/SuSo Download/raw/DRDIP_HH_Survey_2022_Endline/DRDIP_HH_Survey_2022_Endline.dta")
+hh_endline <- as_factor(hh_endline)
+hh_endline$GPS__Timestamp <- as_date(hh_endline$GPS__Timestamp)
+hh_endline <- hh_endline %>% dplyr::rename("Date_of_interview" = "GPS__Timestamp")
+
+hh_endline <- hh_endline %>% mutate(supervisor = str_replace(supervisor,"Besufekade Berhanu", "Besu"), supervisor = str_replace(supervisor, "Hussien Eshetu", "Hussien"),
+supervisor = str_replace(supervisor, "Henok Kifyalew", "Henok"), supervisor = str_replace(supervisor, "Berhanu Lema", "Berhanu"),
+supervisor = str_replace(supervisor, "TsegaZeab Miruts", "TsegaZeab"), supervisor = str_replace(supervisor, "Biniam Fishaye", "Biniam"), 
+supervisor = str_replace(supervisor, "Getachew Worku", "Getachew"), supervisor = str_replace(supervisor, "Gashayeneh Deribe", "Gashayeneh"), 
+supervisor = str_replace(supervisor, "Kahsay Sibhat", "Kahsay"), supervisor = str_replace(supervisor, "Yohans Belachew", "Yohans"), 
+supervisor = str_replace(supervisor, "Asefa Belachew", "Asefa"), supervisor = str_replace(supervisor, "Tigist mamo", "Tigist"), supervisor = str_replace(supervisor, "Ziyad haro mahammed", "Ziyad"))
+
+hh_endline <- hh_endline %>% mutate(region = str_replace(region,"Benishangul-Gumuz", "Benishangul"))
+
+#Import HH Survey Baseline Data
+hh_baseline <- read_dta("C:/Users/Admin/Desktop/Backup/Documents/Survey - Projects/DRDIP II/Download Data/DRDIP_HH_Survey_2022_Baseline/SuSo Download/raw/DRDIP_HH_2022_Baseline_Amhara/DRDIP_HH_2022_Baseline_Amhara.dta")
+hh_baseline <- as_factor(hh_baseline)
+hh_baseline$GPS__Timestamp <- as_date(hh_baseline$GPS__Timestamp)
+hh_baseline <- hh_baseline %>% dplyr::rename("Date_of_interview" = "GPS__Timestamp")
+ 
+hh_baseline <- hh_baseline %>% mutate(supervisor = str_replace(supervisor,"Besufekade Berhanu", "Besu"), supervisor = str_replace(supervisor, "Hussien Eshetu","Hussien"),
+supervisor = str_replace(supervisor, "Henok Kifyalew", "Henok"), supervisor = str_replace(supervisor, "Berhanu Lema", "Berhanu"),
+supervisor = str_replace(supervisor, "TsegaZeab Miruts", "TsegaZeab"), supervisor = str_replace(supervisor, "Biniam Fishaye", "Biniam"), 
+supervisor = str_replace(supervisor, "Getachew Worku", "Getachew"), supervisor = str_replace(supervisor, "Gashayeneh Deribe", "Gashayeneh"), 
+supervisor = str_replace(supervisor, "Kahsay Sibhat", "Kahsay"), supervisor = str_replace(supervisor, "Yohans Belachew", "Yohans"), 
+supervisor = str_replace(supervisor, "Asefa Belachew", "Asefa"), supervisor = str_replace(supervisor, "Tigist mamo", "Tigist"), supervisor = str_replace(supervisor, "Ziyad haro mahammed", "Ziyad"))
+
+hh_baseline <- hh_baseline %>% mutate(region = str_replace(region,"Benishangul-Gumuz", "Benishangul"))
+
+   
+#Endline Replacement
+hh_repl <- read_dta("C:/Users/Admin/Desktop/Backup/Documents/Survey - Projects/DRDIP II/Download Data/Endline Replacement/SuSo Download/raw/DRDIP_Replacement_HHs/DRDIP_Replacement_HHs.dta")
+hh_repl <- as_factor(hh_repl)
+hh_repl$GPS__Timestamp <- as_date(hh_repl$GPS__Timestamp)
+hh_repl <- hh_repl %>% dplyr::rename("Date_of_interview" = "GPS__Timestamp")
+
+hh_repl <- hh_repl %>% mutate(supervisor = str_replace(supervisor,"Besufekade Berhanu", "Besu"), supervisor = str_replace(supervisor, "Hussien Eshetu", "Hussien"),
+supervisor = str_replace(supervisor, "Henok Kifyalew", "Henok"), supervisor = str_replace(supervisor, "Berhanu Lema", "Berhanu"),
+supervisor = str_replace(supervisor, "TsegaZeab Miruts", "TsegaZeab"), supervisor = str_replace(supervisor, "Biniam Fishaye", "Biniam"), 
+supervisor = str_replace(supervisor, "Getachew Worku", "Getachew"), supervisor = str_replace(supervisor, "Gashayeneh Deribe", "Gashayeneh"), 
+supervisor = str_replace(supervisor, "Kahsay Sibhat", "Kahsay"), supervisor = str_replace(supervisor, "Yohans Belachew", "Yohans"), 
+supervisor = str_replace(supervisor, "Asefa Belachew", "Asefa"), supervisor = str_replace(supervisor, "Tigist mamo", "Tigist"), supervisor = str_replace(supervisor, "Ziyad haro mahammed", "Ziyad"))
+
+hh_repl <- hh_repl %>% mutate(region = str_replace(region,"Benishangul-Gumuz", "Benishangul"))
+
+
+#Merge Endline
+
+hh_endline_mrg <- rbind.fill(hh_endline, hh_repl)
+
+```
+
+HOME
+=====================================
+
+Row
+-----------------------------------------------------------------------
+
+### HH ENDLINE
+
+```{r}
+num_end <- nrow(hh_endline)
+valueBox(num_end, icon = "fa-bar-chart", color="#79DAE8")
+```
+
+### REPLACEMENT ENDLINE
+
+```{r}
+num_repl <- nrow(hh_repl)
+valueBox(num_repl, icon = "fa-bar-chart", color="#79DAE8")
+```
+
+### HH BASELINE
+
+```{r}
+num_base <- nrow(hh_baseline)
+valueBox(num_base, icon = "fa-bar-chart", color = "#79DAE8")
+
+```
+
+### LAST UPDATED AT:  
+
+```{r}
+updated_time <- Sys.Date()
+
+valueBox(updated_time,icon = "fa-clock", color = "#006E7F")
+```
+
+```{r}
+tool_type <- c("HH Endline", "HH Baseline", "Replacement")
+synced_tool <- c(num_end, num_base, num_repl)
+
+```
+
+```{r Endline}
+Besufekade_end <- hh_endline %>% filter(supervisor=="Besu") %>% nrow()
+Hussien_end <- hh_endline %>% filter(supervisor=="Hussien") %>% nrow()
+Henok_end <- hh_endline %>% filter(supervisor=="Henok") %>% nrow()
+Berhanu_end <- hh_endline %>% filter(supervisor=="Berhanu") %>% nrow()
+TsegaZeab_end <- hh_endline %>% filter(supervisor=="TsegaZeab") %>% nrow()
+Biniam_end <- hh_endline %>% filter(supervisor=="Biniam") %>% nrow()
+Getachew_end <- hh_endline %>% filter(supervisor=="Getachew") %>% nrow()
+Gashayeneh_end <- hh_endline %>% filter(supervisor=="Gashayeneh") %>% nrow()
+Kahsay_end <- hh_endline %>% filter(supervisor=="Kahsay") %>% nrow()
+Yohans_end <- hh_endline %>% filter(supervisor=="Yohans") %>% nrow()
+Asefa_end <- hh_endline %>% filter(supervisor=="Asefa") %>% nrow()
+Tigist_end <- hh_endline %>% filter(supervisor=="Tigist") %>% nrow()
+Ziyad_end <- hh_endline %>% filter(supervisor=="Ziyad") %>% nrow()
+```
+
+```{r baseline}
+Besufekade_base <- hh_baseline %>% filter(supervisor=="Besu") %>% nrow()
+Hussien_base <- hh_baseline %>% filter(supervisor=="Hussien") %>% nrow()
+Henok_base <- hh_baseline %>% filter(supervisor=="Henok") %>% nrow()
+Berhanu_base <- hh_baseline %>% filter(supervisor=="Berhanu") %>% nrow()
+TsegaZeab_base <- hh_baseline %>% filter(supervisor=="TsegaZeab") %>% nrow()
+Biniam_base <- hh_baseline %>% filter(supervisor=="Biniam") %>% nrow()
+Getachew_base <- hh_baseline %>% filter(supervisor=="Getachew") %>% nrow()
+Gashayeneh_base <- hh_baseline %>% filter(supervisor=="Gashayeneh") %>% nrow()
+Kahsay_base <- hh_baseline %>% filter(supervisor=="Kahsay") %>% nrow()
+Yohans_base <- hh_baseline %>% filter(supervisor=="Yohans") %>% nrow()
+Asefa_base <- hh_baseline %>% filter(supervisor=="Asefa") %>% nrow()
+Tigist_base <- hh_baseline %>% filter(supervisor=="Tigist") %>% nrow()
+Ziyad_base <- hh_baseline %>% filter(supervisor=="Ziyad") %>% nrow()
+```
+
+```{r}
+endline_by_date <- hh_endline_mrg %>% select('Date_of_interview', 'supervisor')%>% 
+  group_by(Date_of_interview, supervisor) %>% dplyr::summarise(count_date = n()) %>%  drop_na() %>% 
+  arrange(Date_of_interview)
+  
+```
+
+Column {.tabset}
+-----------------------------------------------------------------------
+### ENDLINE DAILY PROGRESS BY SUPERVISOR
+
+```{r}
+hh_endline_mrg %>% select('Date_of_interview', 'supervisor') %>% 
+  arrange(Date_of_interview) %>% 
+  count( Date_of_interview,supervisor) %>% 
+  hchart('spline', hcaes(x = 'Date_of_interview', y = 'n', group = "supervisor"))
+```
+
+### BASELINE DAILY PROGRESS BY SUPERVISOR
+```{r}
+hh_baseline %>% select('Date_of_interview', 'supervisor') %>% 
+  arrange(Date_of_interview) %>% 
+  count( Date_of_interview,supervisor) %>% 
+  hchart('spline', hcaes(x = 'Date_of_interview', y = 'n', group = "supervisor"))
+
+```
+
+
+Column 
+-----------------------------------------------------------------------
+
+### SUPERVISOR BY HOUSEHOLD QUESTIONNAIRE
+
+```{r}
+sup_name <- c("Besufekade", "Hussien", "Henok", "Berhanu", "TsegaZeab", "Biniam", "Getachew", "Gashayeneh", "Kahsay", "Yohans", "Asefa", "Tigist", "Ziyad")
+sup_end <- c(Besufekade_end, Hussien_end, Henok_end, Berhanu_end, TsegaZeab_end, Biniam_end, Getachew_end, Gashayeneh_end, Kahsay_end, Yohans_end, Asefa_end, Tigist_end, Ziyad_end)
+
+sup_base <- c(Besufekade_base, Hussien_base, Henok_base, Berhanu_base, TsegaZeab_base, Biniam_base, Getachew_base, Gashayeneh_base, Kahsay_base, Yohans_base, Asefa_base, Tigist_base, Ziyad_base)
+
+
+data_sup <- data.frame(sup_name, sup_end, sup_base)
+data_sup <- data_sup %>% arrange(sup_end)
+#to arrange
+data_sup$sup_name<- factor(data_sup$sup_name, levels=data_sup[["sup_name"]])
+
+#plot fig
+fig1 <- data_sup %>% plot_ly()
+fig1 <- fig1 %>% add_trace(x = ~sup_name, y = ~sup_end, type = 'bar',  name = 'Endline', marker = list(color = '#006E7F'))
+fig1 <- fig1 %>% add_trace(x = ~sup_name, y = ~sup_base, type = 'bar', name = 'Baseline', marker = list(color = '#79DAE8'))
+fig1 <- fig1 %>% layout(xaxis = list(title = 'SUPERVISOR'), barmode = 'group')          
+fig1 <- fig1 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig1
+
+```
+
+### HH ENDLINE QUESTIONNAIRE  BY REGION 
+```{r }
+hh_endline %>% 
+  dplyr::count(region) %>%
+  arrange(-n) %>% 
+  hchart('bar', hcaes(x = 'region', y = 'n'), color_stops(n=4, colors = c("#F65A83", "#FF1E00", "#21E1E1", "#224B0C")))
+```
+
+
+### TOTAL SYNCED DATA BY QUESTIONNAIRE TYPE
+
+```{r}
+tool_type <- c("Endline", "Baseline", "Replacement")
+synced_tool <- c(num_end, num_base, num_repl)
+
+
+fig <- plot_ly(type='pie', labels= ~tool_type, values= ~synced_tool,
+               textinfo='label+percent',
+               insidetextorientation='radial',
+               marker = list(colors = c('#006E7F','#9BA3EB','#79DAE8'))
+               
+               )
+fig
+
+```
+
+EXPECTED vs ACTUAL
+=====================================
+Row
+-----------------------------------------------------------------------
+
+### HH ENDLINE
+
+```{r}
+num_end <- nrow(hh_endline)
+valueBox(num_end, icon = "fa-bar-chart", color="#79DAE8")
+```
+
+### REPLACEMENT ENDLINE
+
+```{r}
+num_repl <- nrow(hh_repl)
+valueBox(num_repl, icon = "fa-bar-chart",color="#79DAE8")
+```
+
+### HH BASELINE
+
+```{r}
+num_base <- nrow(hh_baseline)
+valueBox(num_base, icon = "fa-bar-chart", color = "#79DAE8")
+
+```
+
+### LAST UPDATED AT:  
+
+```{r}
+updated_time <- Sys.Date()
+
+valueBox(updated_time,icon = "fa-clock", color = "#006E7F")
+```
+
+```{r}
+tool_type <- c("HH Endline", "HH Baseline", "Replacement")
+synced_tool <- c(num_end, num_base, num_repl)
+
+```
+
+
+```{r endline expected}
+supervisor <- c("Besu", "Henok", "Berhanu", "TsegaZeab", "Biniam", "Getachew", "Gashayeneh", "Kahsay", "Yohans", "Asefa", "Tigist", "Ziyad")
+Expected <- c(239,	200,	240,	200,	240,	194,	200,	221,	233,	228,	280,	282)
+endline_exp_df <- data.frame(supervisor, Expected)
+
+endline_act <- hh_endline_mrg %>% group_by(supervisor) %>% dplyr::summarise(Endline = n()) %>% arrange(Endline)
+
+endline_act$supervisor<- factor(endline_act$supervisor, levels=endline_act[["supervisor"]])
+
+endline_merge_df <- inner_join(x = endline_act, y = endline_exp_df, by="supervisor")
+```
+
+
+Column 
+-----------------------------------------------------------------------
+### ENDLINE (EXPECTED vs ACTUAL)
+
+```{r}
+
+#plot fig
+fig2 <- endline_merge_df %>% plot_ly()
+fig2 <- fig2 %>% add_trace(x = ~supervisor, y = ~Endline, type = 'bar',  name = 'Actual synced', marker = list(color = '#006E7F'))
+fig2 <- fig2 %>% add_trace(x = ~supervisor, y = ~Expected, type = 'bar', name = 'Expected data', marker = list(color = '#79DAE8'))
+fig2 <- fig2 %>% layout(xaxis = list(title = 'SUPERVISOR'), barmode = 'group')          
+fig2 <- fig2 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig2
+
+```
+
+```{r baseline by enumerator}
+
+hh_baseline<- hh_baseline%>% mutate(enumerator = str_replace(enumerator,"Hussien Eshetu", "Hussien"), enumerator = str_replace(enumerator, "Yeshalem Amsalu Kasshun", "Yeshalem"),
+enumerator = str_replace(enumerator, "Abrhame Tsgaye", "Abrhame"), enumerator = str_replace(enumerator, "Birara kasay", "Birara"), enumerator = str_replace(enumerator, "Semegn Abebe", "Semegn"),enumerator = str_replace(enumerator, "Sleshi Ketema", "Sleshi"))
+ 
+baseline_act <- hh_baseline %>% group_by(enumerator) %>% dplyr::summarise(count_baseline = n()) %>% arrange(count_baseline)
+
+baseline_act$enumerator<- factor(baseline_act$enumerator, levels=baseline_act[["enumerator"]])
+
+```
+
+### BASELINE DATA BY ENUMERATOR
+
+```{r}
+
+#plot fig
+fig3 <- baseline_act %>% plot_ly()
+fig3 <- fig3 %>% add_trace(x = ~enumerator, y = ~count_baseline, type = 'bar',  name = 'Synced data', marker = list(color = '#68B984'))
+
+fig3 <- fig3 %>% layout(xaxis = list(title = 'ENUMERATOR'), barmode = 'group')          
+fig3 <- fig3 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig3
+
+
+```
+
+
+Column 
+-----------------------------------------------------------------------
+### ENDLINE DATA TRAIND
+```{r}
+repl_by_sup <- hh_repl %>% select('supervisor') %>% 
+  group_by(supervisor) %>% dplyr::summarise(Replaced = n()) %>% drop_na() %>%
+  arrange(Replaced)
+  
+expected_merged <- right_join(x = repl_by_sup, y = endline_merge_df, by="supervisor")  
+expected_merged <- replace(expected_merged, is.na(expected_merged), 0)
+#plot fig 4
+
+fig4 <- expected_merged %>% plot_ly()
+fig4 <- fig4 %>% add_trace(x = ~supervisor, y = ~Replaced, type = 'bar',  name = 'Replaced', marker = list(color = '#0AA1DD'))
+fig4 <- fig4 %>% add_trace(x = ~supervisor, y = ~Endline, type = 'bar', name = 'Endline Found', marker = list(color = '#006E7F'))
+fig4 <- fig4 %>% add_trace(x = ~supervisor, y = ~Expected, type = 'bar', name = 'Expected', marker = list(color = '#79DAE8'))
+fig4 <- fig4 %>% layout(xaxis = list(title = 'SUPERVISOR'), barmode = 'group')          
+fig4 <- fig4 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig4
+```
+
+### BASELINE DATA BY KEBELE
+```{r}
+baseline_by_kebele <- hh_baseline %>% select('supervisor','kebele')%>% filter(supervisor=="Hussien") %>% 
+  group_by(kebele) %>% dplyr::summarise(kebele_count = n()) %>%  drop_na() %>% 
+  arrange(kebele)
+
+baseline_by_kebele$kebele<- factor(baseline_by_kebele$kebele, levels=baseline_by_kebele[["kebele"]])
+```
+
+
+```{r}
+
+fig5 <- baseline_by_kebele %>% plot_ly()
+fig5 <- fig5 %>% add_trace(x = ~kebele, y = ~kebele_count, type = 'bar',  name = 'Synced data', marker = list(color = '#68B984'))
+
+fig5 <- fig5 %>% layout(xaxis = list(title = 'KEBELE'), barmode = 'coloumn')          
+
+
+fig5
+
+```
+
+ 
+
+
