@@ -332,7 +332,7 @@ fig3
 
 Column 
 -----------------------------------------------------------------------
-### ENDLINE DATA TRAIND
+### ENDLINE (EXPECTED, ACTUAL, REPLACED)
 ```{r}
 repl_by_sup <- hh_repl %>% select('supervisor') %>% 
   group_by(supervisor) %>% dplyr::summarise(Replaced = n()) %>% drop_na() %>%
