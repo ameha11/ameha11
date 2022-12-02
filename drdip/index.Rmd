@@ -84,21 +84,21 @@ Row
 
 ```{r}
 num_end <- nrow(hh_endline)
-valueBox(num_end, icon = "fa-bar-chart", color="#79DAE8")
+valueBox(num_end, icon = "fa-bar-chart")
 ```
 
 ### REPLACEMENT ENDLINE
 
 ```{r}
 num_repl <- nrow(hh_repl)
-valueBox(num_repl, icon = "fa-bar-chart", color="#79DAE8")
+valueBox(num_repl, icon = "fa-bar-chart")
 ```
 
-### HH BASELINE
+### BASELINE
 
 ```{r}
 num_base <- nrow(hh_baseline)
-valueBox(num_base, icon = "fa-bar-chart", color = "#79DAE8")
+valueBox(num_base, icon = "fa-bar-chart")
 
 ```
 
@@ -179,7 +179,7 @@ hh_baseline %>% select('Date_of_interview', 'supervisor') %>%
 Column 
 -----------------------------------------------------------------------
 
-### SUPERVISOR BY HOUSEHOLD QUESTIONNAIRE
+### SUPERVISOR BY HOUSEHOLD QUESTIONNAIRE {data-width=400}
 
 ```{r}
 sup_name <- c("Besufekade", "Hussien", "Henok", "Berhanu", "TsegaZeab", "Biniam", "Getachew", "Gashayeneh", "Kahsay", "Yohans", "Asefa", "Tigist", "Ziyad")
@@ -204,7 +204,7 @@ fig1
 
 ```
 
-### HH ENDLINE QUESTIONNAIRE  BY REGION 
+### HH ENDLINE QUESTIONNAIRE  BY REGION {data-width=300}
 ```{r }
 hh_endline %>% 
   dplyr::count(region) %>%
@@ -213,7 +213,7 @@ hh_endline %>%
 ```
 
 
-### TOTAL SYNCED DATA BY QUESTIONNAIRE TYPE
+### TOTAL SYNCED DATA BY QUESTIONNAIRE TYPE {data-width=300}
 
 ```{r}
 tool_type <- c("Endline", "Baseline", "Replacement")
@@ -239,21 +239,21 @@ Row
 
 ```{r}
 num_end <- nrow(hh_endline)
-valueBox(num_end, icon = "fa-bar-chart", color="#79DAE8")
+valueBox(num_end, icon = "fa-bar-chart")
 ```
 
 ### REPLACEMENT ENDLINE
 
 ```{r}
 num_repl <- nrow(hh_repl)
-valueBox(num_repl, icon = "fa-bar-chart",color="#79DAE8")
+valueBox(num_repl, icon = "fa-bar-chart")
 ```
 
 ### HH BASELINE
 
 ```{r}
 num_base <- nrow(hh_baseline)
-valueBox(num_base, icon = "fa-bar-chart", color = "#79DAE8")
+valueBox(num_base, icon = "fa-bar-chart")
 
 ```
 
@@ -285,9 +285,9 @@ endline_merge_df <- inner_join(x = endline_act, y = endline_exp_df, by="supervis
 ```
 
 
-Column 
+Column
 -----------------------------------------------------------------------
-### ENDLINE (EXPECTED vs ACTUAL)
+### ENDLINE (EXPECTED vs ACTUAL) {data-width=600}
 
 ```{r}
 
@@ -313,7 +313,7 @@ baseline_act$enumerator<- factor(baseline_act$enumerator, levels=baseline_act[["
 
 ```
 
-### BASELINE DATA BY ENUMERATOR
+### BASELINE DATA BY ENUMERATOR {data-width=400}
 
 ```{r}
 
@@ -332,7 +332,7 @@ fig3
 
 Column 
 -----------------------------------------------------------------------
-### ENDLINE (EXPECTED, ACTUAL, REPLACED)
+### ENDLINE (EXPECTED, ACTUAL, REPLACED) {data-width=600}
 ```{r}
 repl_by_sup <- hh_repl %>% select('supervisor') %>% 
   group_by(supervisor) %>% dplyr::summarise(Replaced = n()) %>% drop_na() %>%
@@ -352,7 +352,7 @@ fig4 <- fig4 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
 fig4
 ```
 
-### BASELINE DATA BY KEBELE
+### BASELINE DATA BY KEBELE {data-width=400}
 ```{r}
 baseline_by_kebele <- hh_baseline %>% select('supervisor','kebele')%>% filter(supervisor=="Hussien") %>% 
   group_by(kebele) %>% dplyr::summarise(kebele_count = n()) %>%  drop_na() %>% 
