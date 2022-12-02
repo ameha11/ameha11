@@ -356,7 +356,7 @@ fig4
 ```{r}
 baseline_by_kebele <- hh_baseline %>% select('supervisor','kebele')%>% filter(supervisor=="Hussien") %>% 
   group_by(kebele) %>% dplyr::summarise(kebele_count = n()) %>%  drop_na() %>% 
-  arrange(kebele)
+  arrange(kebele_count)
 
 baseline_by_kebele$kebele<- factor(baseline_by_kebele$kebele, levels=baseline_by_kebele[["kebele"]])
 ```
