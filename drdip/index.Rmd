@@ -17,6 +17,9 @@ library(highcharter)
 library(plotly)
 library(DT)
 library(stringr)
+library(ggplot2)
+library(viridis)
+library(hrbrthemes)
 
 ```
 
@@ -80,7 +83,7 @@ HOME
 Row
 -----------------------------------------------------------------------
 
-### HH ENDLINE
+### ENDLINE
 
 ```{r}
 num_end <- nrow(hh_endline)
@@ -102,7 +105,7 @@ valueBox(num_base, icon = "fa-bar-chart")
 
 ```
 
-### LAST UPDATED AT:  
+### LAST UPDATED:  
 
 ```{r}
 updated_time <- Sys.Date()
@@ -235,7 +238,7 @@ EXPECTED vs ACTUAL
 Row
 -----------------------------------------------------------------------
 
-### HH ENDLINE
+### ENDLINE
 
 ```{r}
 num_end <- nrow(hh_endline)
@@ -249,7 +252,7 @@ num_repl <- nrow(hh_repl)
 valueBox(num_repl, icon = "fa-bar-chart")
 ```
 
-### HH BASELINE
+### BASELINE
 
 ```{r}
 num_base <- nrow(hh_baseline)
@@ -257,7 +260,7 @@ valueBox(num_base, icon = "fa-bar-chart")
 
 ```
 
-### LAST UPDATED AT:  
+### LAST UPDATED:  
 
 ```{r}
 updated_time <- Sys.Date()
@@ -375,5 +378,139 @@ fig5
 ```
 
  
+KPI
+=====================================
+Row
+-----------------------------------------------------------------------
 
+### ENDLINE
+
+```{r}
+num_end <- nrow(hh_endline)
+valueBox(num_end, icon = "fa-bar-chart")
+```
+
+### REPLACEMENT ENDLINE
+
+```{r}
+num_repl <- nrow(hh_repl)
+valueBox(num_repl, icon = "fa-bar-chart")
+```
+
+### BASELINE
+
+```{r}
+num_base <- nrow(hh_baseline)
+valueBox(num_base, icon = "fa-bar-chart")
+
+```
+
+### LAST UPDATED:  
+
+```{r}
+updated_time <- Sys.Date()
+
+valueBox(updated_time,icon = "fa-clock", color = "#006E7F")
+```
+
+Column
+-----------------------------------------------------------------------
+### {.no-padding data-height=350}
+```{r}
+
+hp<-hh_endline_mrg %>% select('region', 'D2') %>% filter(D2=="Yes")%>% 
+  group_by(region) %>% summarise(Health_post = n())
+
+  
+hc<-hh_endline_mrg %>% select('region', 'D4') %>% filter(D4=="Yes")%>% 
+  group_by(region) %>% summarise(Health_center = n())
+
+
+hosp<-hh_endline_mrg %>% select('region', 'D6') %>% filter(D6=="Yes")%>% 
+  group_by(region) %>% summarise(Hospital = n())
+
+HF_1_2 <- inner_join(x = hp, y = hc, by="region")
+
+HF_1_2_3 <- inner_join(x = HF_1_2, y = hosp, by="region")
+
+
+fig5 <- HF_1_2_3 %>% plot_ly()
+fig5 <- fig5 %>% add_trace(x = ~region, y = ~Health_post, type = 'bar',  name = 'Health Post', marker = list(color = '#FFBF00'))
+fig5 <- fig5 %>% add_trace(x = ~region, y = ~Health_center, type = 'bar', name = 'Health Center', marker = list(color = '#2B3A55'))
+fig5 <- fig5 %>% add_trace(x = ~region, y = ~Hospital, type = 'bar', name = 'Hospital', marker = list(color = '#65647C'))
+#fig5 <- fig5 %>% layout(xaxis = list(title = 'Beneficiaries with Access to Health Facilities'), barmode = 'group')          
+#fig5 <- fig5 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+fig5 <- fig5 %>% layout(title = "ACCESS TO HEALTH FACILITY",
+         xaxis = list(title = ""),
+         yaxis = list(title = 'n'), barmode = 'group')
+
+fig5
+```
+
+### {.no-padding data-height=350}
+
+```{r}
+
+animal_service<-hh_endline_mrg %>% select(D15) %>% group_by(D15) %>% 
+  summarise(count = n()) %>% drop_na() %>% 
+  hchart('pie', hcaes(x = D15, y = count, color=c('#5DA7DB','#2B3A55','#FFBF00'))) %>% 
+  hc_tooltip(pointFormat='<b>Proportion: </b> {point.percentage:,.2f}%') %>% 
+  hc_title(text = 'ACCESS TO ANIMAL HEALTH SERVICES', style = list(fontSize = '15px', fontWeight = 'bold')) 
+animal_service
+#color =  c('#F57328','#2B3A55','#FFBF00') F57328             
+```
+
+Column
+-----------------------------------------------------------------------
+### {.no-padding data-height=350} 
+```{r}
+
+first_cycle<-hh_endline_mrg %>% select('region', 'D29') %>% filter(D29=="Yes")%>% 
+  group_by(region) %>% summarise(First_Cycle = n())
+
+  
+primary_cycle<-hh_endline_mrg %>% select('region', 'D31') %>% filter(D31=="Yes") %>% 
+  group_by(region) %>% summarise(Primary = n())
+
+
+secondary_cycle<-hh_endline_mrg %>% select('region', 'D33') %>% filter(D33=="Yes")%>% 
+  group_by(region) %>% summarise(Secondary = n())
+
+prep<-hh_endline_mrg %>% select('region', 'D35') %>% filter(D35=="Yes")%>% 
+  group_by(region) %>% summarise(Preparatory = n())
+
+School_2 <- inner_join(x = first_cycle, y = primary_cycle, by="region")
+
+School_3 <- inner_join(x = School_2, y = secondary_cycle, by="region")
+
+School_4 <- inner_join(x = School_3, y = prep, by="region")
+
+fig6 <- School_4 %>% plot_ly()
+fig6 <- fig6 %>% add_trace(x = ~region, y = ~First_Cycle, type = 'bar',  name = 'First Cycle', marker = list(color = '#FFBF00'))
+fig6 <- fig6 %>% add_trace(x = ~region, y = ~Primary, type = 'bar', name = 'Primary', marker = list(color = '#2B3A55'))
+fig6 <- fig6 %>% add_trace(x = ~region, y = ~Secondary, type = 'bar', name = 'Secondary', marker = list(color = '#65647C'))
+fig6 <- fig6 %>% add_trace(x = ~region, y = ~Preparatory, type = 'bar', name = 'Preparatory', marker = list(color = '#F57328'))
+#fig5 <- fig5 %>% layout(xaxis = list(title = 'Beneficiaries with Access to Health Facilities'), barmode = 'group')  68B984        
+#fig5 <- fig5 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+fig6 <- fig6 %>% layout(title = "ACCESS TO EDUCATION",
+         xaxis = list(title = ""),
+         yaxis = list(title = 'n'), barmode = 'group')
+
+fig6
+
+```
+
+### {.no-padding data-height=350}
+
+```{r}
+water_acces<-hh_endline_mrg %>% select(D48) %>% group_by(D48) %>% 
+  summarise(count = n()) %>% drop_na() %>% 
+  hchart('pie', hcaes(x = D48, y = count, color=c('#5DA7DB','#2B3A55', '#FFBF00', '#65647C', '#F57328', '#5837D0','#FF6464','#E0144C', '#38E54D'))) %>% 
+  hc_tooltip(pointFormat='<b>Proportion: </b> {point.percentage:,.2f}%') %>% 
+  hc_title(text = 'MAIN SOURCE OF DRINKING WATER', style = list(fontSize = '15px', fontWeight = 'bold')) 
+water_acces
+#color=c('#5DA7DB','#FFBF00', '#2B3A55', '#65647C', '#F57328', '#5837D0','#FF6464', '#E0144C','#38E54D' ,'#000000')
+#yello #FFBF00
+#blue black #2B3A55
+```
 
