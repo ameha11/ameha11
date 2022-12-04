@@ -455,7 +455,7 @@ animal_service<-hh_endline_mrg %>% select(D15) %>% group_by(D15) %>%
   summarise(count = n()) %>% drop_na() %>% 
   hchart('pie', hcaes(x = D15, y = count, color=c('#5DA7DB','#2B3A55','#FFBF00'))) %>% 
   hc_tooltip(pointFormat='<b>Proportion: </b> {point.percentage:,.2f}%') %>% 
-  hc_title(text = 'ACCESS TO ANIMAL HEALTH SERVICES', style = list(fontSize = '15px', fontWeight = 'bold')) 
+  hc_title(text = 'ACCESS TO ANIMAL HEALTH SERVICES', style = list(fontSize = '12px', fontWeight = 'bold')) 
 animal_service
 #color =  c('#F57328','#2B3A55','#FFBF00') F57328             
 ```
@@ -507,7 +507,7 @@ water_acces<-hh_endline_mrg %>% select(D48) %>% group_by(D48) %>%
   summarise(count = n()) %>% drop_na() %>% 
   hchart('pie', hcaes(x = D48, y = count, color=c('#5DA7DB','#2B3A55', '#FFBF00', '#65647C', '#F57328', '#5837D0','#FF6464','#E0144C', '#38E54D'))) %>% 
   hc_tooltip(pointFormat='<b>Proportion: </b> {point.percentage:,.2f}%') %>% 
-  hc_title(text = 'MAIN SOURCE OF DRINKING WATER', style = list(fontSize = '15px', fontWeight = 'bold')) 
+  hc_title(text = 'MAIN SOURCE OF DRINKING WATER', style = list(fontSize = '12px', fontWeight = 'bold')) 
 water_acces
 #color=c('#5DA7DB','#FFBF00', '#2B3A55', '#65647C', '#F57328', '#5837D0','#FF6464', '#E0144C','#38E54D' ,'#000000')
 #yello #FFBF00
