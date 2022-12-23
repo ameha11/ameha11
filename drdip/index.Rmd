@@ -40,7 +40,7 @@ supervisor = str_replace(supervisor, "Asefa Belachew", "Asefa"), supervisor = st
 hh_endline <- hh_endline %>% mutate(region = str_replace(region,"Benishangul-Gumuz", "Benishangul"))
 
 #Import HH Survey Baseline Data
-hh_baseline <- read_dta("C:/Users/Admin/Desktop/Backup/Documents/Survey - Projects/DRDIP II/Download Data/DRDIP_HH_Survey_2022_Baseline/SuSo Download/raw/DRDIP_HH_2022_Baseline_Amhara/DRDIP_HH_2022_Baseline_Amhara.dta")
+hh_baseline <- read_dta("C:/Users/Admin/Desktop/Backup/Documents/Survey - Projects/DRDIP II/Download Data/DRDIP_HH_Survey_2022_Baseline/SuSo Download/raw/DRDIP_HH_Baseline_2022_r/DRDIP_HH_Baseline_2022_r.dta")
 hh_baseline <- as_factor(hh_baseline)
 hh_baseline$GPS__Timestamp <- as_date(hh_baseline$GPS__Timestamp)
 hh_baseline <- hh_baseline %>% dplyr::rename("Date_of_interview" = "GPS__Timestamp")
@@ -160,20 +160,20 @@ endline_by_date <- hh_endline_mrg %>% select('Date_of_interview', 'supervisor')%
 
 Column {.tabset}
 -----------------------------------------------------------------------
-### ENDLINE DAILY PROGRESS BY SUPERVISOR
-
-```{r}
-hh_endline_mrg %>% select('Date_of_interview', 'supervisor') %>% 
-  arrange(Date_of_interview) %>% 
-  count( Date_of_interview,supervisor) %>% 
-  hchart('spline', hcaes(x = 'Date_of_interview', y = 'n', group = "supervisor"))
-```
-
 ### BASELINE DAILY PROGRESS BY SUPERVISOR
+
 ```{r}
 hh_baseline %>% select('Date_of_interview', 'supervisor') %>% 
   arrange(Date_of_interview) %>% 
-  count( Date_of_interview,supervisor) %>% 
+  dplyr::count( Date_of_interview, supervisor) %>% 
+  hchart('spline', hcaes(x = 'Date_of_interview', y = 'n', group = "supervisor"))
+```
+
+### ENDLINE DAILY PROGRESS BY SUPERVISOR
+```{r}
+hh_endline_mrg %>% select('Date_of_interview', 'supervisor') %>% 
+  arrange(Date_of_interview) %>% 
+  dplyr::count( Date_of_interview,supervisor) %>% 
   hchart('spline', hcaes(x = 'Date_of_interview', y = 'n', group = "supervisor"))
 
 ```
@@ -307,27 +307,56 @@ fig2
 
 ```{r baseline by enumerator}
 
-hh_baseline<- hh_baseline%>% mutate(enumerator = str_replace(enumerator,"Hussien Eshetu", "Hussien"), enumerator = str_replace(enumerator, "Yeshalem Amsalu Kasshun", "Yeshalem"),
-enumerator = str_replace(enumerator, "Abrhame Tsgaye", "Abrhame"), enumerator = str_replace(enumerator, "Birara kasay", "Birara"), enumerator = str_replace(enumerator, "Semegn Abebe", "Semegn"),enumerator = str_replace(enumerator, "Sleshi Ketema", "Sleshi"))
- 
-baseline_act <- hh_baseline %>% group_by(enumerator) %>% dplyr::summarise(count_baseline = n()) %>% arrange(count_baseline)
-
-baseline_act$enumerator<- factor(baseline_act$enumerator, levels=baseline_act[["enumerator"]])
+# hh_baseline<- hh_baseline%>% mutate(enumerator = str_replace(enumerator,"Hussien Eshetu", "Hussien"), enumerator = str_replace(enumerator, "Yeshalem Amsalu Kasshun", "Yeshalem"),
+# enumerator = str_replace(enumerator, "Abrhame Tsgaye", "Abrhame"), enumerator = str_replace(enumerator, "Birara kasay", "Birara"), enumerator = str_replace(enumerator, "Semegn Abebe", "Semegn"),enumerator = str_replace(enumerator, "Sleshi Ketema", "Sleshi"))
+#  
+# baseline_act <- hh_baseline %>% group_by(enumerator) %>% dplyr::summarise(count_baseline = n()) %>% arrange(count_baseline)
+# 
+# baseline_act$enumerator<- factor(baseline_act$enumerator, levels=baseline_act[["enumerator"]])
 
 ```
 
-### BASELINE DATA BY ENUMERATOR {data-width=400}
+```{r refugee and local}
+
+hh_baseline <- hh_baseline %>% mutate(supervisor = str_replace(supervisor,"Besufekade Berhanu", "Besu"), supervisor = str_replace(supervisor, "Hussien Eshetu", "Hussien"),
+supervisor = str_replace(supervisor, "Henok Kifyalew", "Henok"), supervisor = str_replace(supervisor, "Berhanu Lema", "Berhanu"),
+supervisor = str_replace(supervisor, "TsegaZeab Miruts", "TsegaZeab"), supervisor = str_replace(supervisor, "Biniam Fishaye", "Biniam"), 
+supervisor = str_replace(supervisor, "Getachew Worku", "Getachew"), supervisor = str_replace(supervisor, "Gashayeneh Deribe", "Gashayeneh"), 
+supervisor = str_replace(supervisor, "Kahsay Sibhat", "Kahsay"), supervisor = str_replace(supervisor, "Yohans Belachew", "Yohans"), 
+supervisor = str_replace(supervisor, "Asefa Belachew", "Asefa"), supervisor = str_replace(supervisor, "Tigist mamo", "Tigist"), supervisor = str_replace(supervisor, "Ziyad haro mahammed", "Ziyad"))
+
+refugee <-  hh_baseline %>% select('supervisor', 'A107') %>% filter(A107=="Refugee")%>% 
+  group_by(supervisor) %>% summarise(Refugee = n())
+
+local <-  hh_baseline %>% select('supervisor', 'A107') %>% filter(A107=="Local resident")%>% 
+  group_by(supervisor) %>% summarise(Local = n())
+
+merged_refg_loc <- inner_join(x = refugee, y = local, by="supervisor")
+```
+
+
+### BASELINE DATA BY REFUGEE AND LOCAL {data-width=500}
 
 ```{r}
 
 #plot fig
-fig3 <- baseline_act %>% plot_ly()
-fig3 <- fig3 %>% add_trace(x = ~enumerator, y = ~count_baseline, type = 'bar',  name = 'Synced data', marker = list(color = '#68B984'))
+# fig3 <- baseline_act %>% plot_ly()
+# fig3 <- fig3 %>% add_trace(x = ~enumerator, y = ~count_baseline, type = 'bar',  name = 'Synced data', marker = list(color = '#68B984'))
+# 
+# fig3 <- fig3 %>% layout(xaxis = list(title = 'ENUMERATOR'), barmode = 'group')          
+# fig3 <- fig3 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+# 
+# fig3
+# 
+fig5 <- merged_refg_loc %>% plot_ly()
+fig5 <- fig5 %>% add_trace(x = ~supervisor, y = ~Refugee, type = 'bar',  name = 'Refugee', marker = list(color = '#FFBF00'))
+fig5 <- fig5 %>% add_trace(x = ~supervisor, y = ~Local, type = 'bar', name = 'Local resident', marker = list(color = '#2B3A55'))
 
-fig3 <- fig3 %>% layout(xaxis = list(title = 'ENUMERATOR'), barmode = 'group')          
-fig3 <- fig3 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+fig5 <- fig5 %>% layout(title = "",
+         xaxis = list(title = ""),
+         yaxis = list(title = 'n'), barmode = 'group')
 
-fig3
+fig5
 
 
 ```
@@ -355,22 +384,28 @@ fig4 <- fig4 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
 fig4
 ```
 
-### BASELINE DATA BY KEBELE {data-width=400}
+### TOTAL BASELINE DATA BY SUPERVISOR {data-width=500}
 ```{r}
-baseline_by_kebele <- hh_baseline %>% select('supervisor','kebele')%>% filter(supervisor=="Hussien") %>% 
-  group_by(kebele) %>% dplyr::summarise(kebele_count = n()) %>%  drop_na() %>% 
-  arrange(kebele_count)
+# baseline_by_kebele <- hh_baseline %>% select('supervisor','kebele')%>% filter(supervisor=="Hussien") %>% 
+#   group_by(kebele) %>% dplyr::summarise(kebele_count = n()) %>%  drop_na() %>% 
+#   arrange(kebele_count)
+# 
+# baseline_by_kebele$kebele<- factor(baseline_by_kebele$kebele, levels=baseline_by_kebele[["kebele"]])
+baseline_by_sup <- hh_baseline %>% select ('supervisor') %>% 
+  group_by(supervisor) %>% dplyr::summarise(total_baseline = n()) %>% drop_na() %>%
+  arrange(total_baseline)
 
-baseline_by_kebele$kebele<- factor(baseline_by_kebele$kebele, levels=baseline_by_kebele[["kebele"]])
+baseline_by_sup$supervisor<- factor(baseline_by_sup$supervisor, levels=baseline_by_sup[["supervisor"]])
+
 ```
 
 
 ```{r}
 
-fig5 <- baseline_by_kebele %>% plot_ly()
-fig5 <- fig5 %>% add_trace(x = ~kebele, y = ~kebele_count, type = 'bar',  name = 'Synced data', marker = list(color = '#68B984'))
+fig5 <- baseline_by_sup %>% plot_ly()
+fig5 <- fig5 %>% add_trace(x = ~supervisor, y = ~total_baseline, type = 'bar',  name = 'Synced data', marker = list(color = '#FFBF00'))
 
-fig5 <- fig5 %>% layout(xaxis = list(title = 'KEBELE'), barmode = 'coloumn')          
+fig5 <- fig5 %>% layout(xaxis = list(title = ''), barmode = 'coloumn')          
 
 
 fig5
