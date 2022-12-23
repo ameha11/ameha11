@@ -403,9 +403,9 @@ baseline_by_sup$supervisor<- factor(baseline_by_sup$supervisor, levels=baseline_
 ```{r}
 
 fig5 <- baseline_by_sup %>% plot_ly()
-fig5 <- fig5 %>% add_trace(x = ~supervisor, y = ~total_baseline, type = 'bar',  name = 'Synced data', marker = list(color = '#FFBF00'))
+fig5 <- fig5 %>% add_trace(x = ~supervisor, y = ~total_baseline, type = 'bar',  name = 'Synced data', marker = list(color = '#2B3A55'))
 
-fig5 <- fig5 %>% layout(xaxis = list(title = ''), barmode = 'coloumn')          
+fig5 <- fig5 %>% layout(xaxis = list(title = ''), yaxis = list(title = 'n'), barmode = 'coloumn')          
 
 
 fig5
