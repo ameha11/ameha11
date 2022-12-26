@@ -152,9 +152,9 @@ Ziyad_base <- hh_baseline %>% filter(supervisor=="Ziyad") %>% nrow()
 ```
 
 ```{r}
-endline_by_date <- hh_endline_mrg %>% select('Date_of_interview', 'supervisor')%>% 
-  group_by(Date_of_interview, supervisor) %>% dplyr::summarise(count_date = n()) %>%  drop_na() %>% 
-  arrange(Date_of_interview)
+# endline_by_date <- hh_endline_mrg %>% select('Date_of_interview', 'supervisor')%>% 
+#   dplyr::group_by(Date_of_interview, supervisor) %>% dplyr::summarise(count_date = n())%>%   drop_na() %>% 
+#   arrange(Date_of_interview)
   
 ```
 
