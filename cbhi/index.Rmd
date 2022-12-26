@@ -1,0 +1,353 @@
+---
+title: "DRDIP2 Report Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: row
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(haven)
+library(plyr)
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(highcharter)
+library(plotly)
+library(DT)
+library(stringr)
+library(ggplot2)
+library(viridis)
+library(hrbrthemes)
+
+```
+
+```{r}
+#Import HH Survey UNICEF_ISNP_HH_Survey_2022 Data
+hh_data <- read_dta("C:/Users/Admin/Desktop/Backup/Documents/Survey - Projects/UNICEF/UNICEF ISPN 2022/Download Data/raw/UNICEF_ISNP_HH_Survey_2022/UNICEF_ISNP_HH_Survey_2022.dta")
+hh_data <- as_factor(hh_data)
+hh_data$I16__Timestamp <- as_date(hh_data$I16__Timestamp)
+hh_data <- hh_data %>% dplyr::rename("Date_of_interview" = "I16__Timestamp")
+
+hh_data <- hh_data %>% mutate(Supervisor = str_replace(Supervisor,"Tariku Adugna", "Tariku"), Supervisor = str_replace(Supervisor, "Chernet Fiseha", "Chernet"),
+Supervisor = str_replace(Supervisor, "Habtamu Getachew", "Habtamu"), Supervisor = str_replace(Supervisor, "Mulugeta Alemu", "Mulugeta"),
+Supervisor = str_replace(Supervisor, "Tamiru Shume", "Tamiru"), Supervisor = str_replace(Supervisor, "Biruk Yimer", "Biruk"), 
+Supervisor = str_replace(Supervisor, "Solomon Alemu", "Solomon"), Supervisor = str_replace(Supervisor, "Beshada Woltegy", "Beshada"))
+
+
+```
+
+HOME
+=====================================
+
+Row
+-----------------------------------------------------------------------
+
+### Libo Kemkem
+
+```{r}
+Libo <- hh_data %>% dplyr::filter(Woreda=="Libo Kemkem") 
+Libo<-nrow(Libo)
+valueBox(Libo, icon = "fa-bar-chart")
+```
+
+### Ebinat
+
+```{r}
+Ebinat <- hh_data %>% dplyr::filter(Woreda=="Ebinat") 
+Ebinat<-nrow(Ebinat)
+valueBox(Ebinat, icon = "fa-bar-chart")
+```
+
+### Dewa Chefa
+
+```{r}
+Dewa <- hh_data %>% dplyr::filter(Woreda=="Dewa Chefa") 
+Dewa<-nrow(Dewa)
+valueBox(Dewa, icon = "fa-bar-chart")
+```
+
+### Artuma Fursi
+
+```{r}
+Artuma <- hh_data %>% dplyr::filter(Woreda=="Artuma Fursi") 
+Artuma<-nrow(Artuma)
+valueBox(Artuma, icon = "fa-bar-chart")
+
+```
+
+### LAST UPDATED:  
+
+```{r}
+updated_time <- Sys.Date()
+
+valueBox(updated_time,icon = "fa-clock", color = "#006E7F")
+```
+
+```{r Endline}
+Tariku <- hh_data %>% filter(Supervisor=="Tariku") %>% nrow()
+Habtamu <- hh_data %>% filter(Supervisor=="Habtamu") %>% nrow()
+Chernet <- hh_data %>% filter(Supervisor=="Chernet") %>% nrow()
+Mulugeta <- hh_data %>% filter(Supervisor=="Mulugeta") %>% nrow()
+Tamiru <- hh_data %>% filter(Supervisor=="Tamiru") %>% nrow()
+Biruk <- hh_data %>% filter(Supervisor=="Biruk") %>% nrow()
+Solomon <- hh_data %>% filter(Supervisor=="Solomon") %>% nrow()
+Beshada <- hh_data %>% filter(Supervisor=="Beshada") %>% nrow()
+```
+
+
+
+Column {.tabset}
+-----------------------------------------------------------------------
+### HOUSEHOLD DATA DAILY PROGRESS BY Supervisor
+
+```{r}
+hh_data %>% select('Date_of_interview', 'Supervisor') %>% 
+  arrange(Date_of_interview) %>% 
+  dplyr::count( Date_of_interview, Supervisor) %>% 
+  hchart('spline', hcaes(x = 'Date_of_interview', y = 'n', group = "Supervisor"))
+```
+
+### COMMUNITY DATA DAILY PROGRESS BY Supervisor
+```{r}
+
+```
+
+
+Column 
+-----------------------------------------------------------------------
+
+### SUPERVISOR BY HOUSEHOLD QUESTIONNAIRE {data-width=400}
+
+```{r}
+sup_name <- c("Tariku", "Habtamu", "Chernet", "Mulugeta", "Tamiru", "Biruk", "Solomon", "Beshada")
+sup_count <- c(Tariku, Habtamu, Chernet, Mulugeta, Tamiru, Biruk, Solomon, Beshada)
+
+
+sup_data <- data.frame(sup_name, sup_count)
+sup_data <- sup_data %>% arrange(sup_count)
+#to arrange
+sup_data$sup_name<- factor(sup_data$sup_name, levels=sup_data[["sup_name"]])
+
+#plot fig
+fig1 <- sup_data %>% plot_ly()
+fig1 <- fig1 %>% add_trace(x = ~sup_name, y = ~sup_count, type = 'bar',  name = 'Household data', marker = list(color = '#006E7F'))
+
+fig1 <- fig1 %>% layout(xaxis = list(title = 'Supervisor'), barmode = 'group')          
+fig1 <- fig1 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig1
+
+```
+
+### HOUSEHOLD QUESTIONNAIRE  BY WOREDA {data-width=300}
+```{r }
+hh_data %>% 
+  dplyr::count(Woreda) %>%
+  arrange(-n) %>% 
+  hchart('bar', hcaes(x = 'Woreda', y = 'n'), color_stops(n=4, colors = c("#F65A83", "#FF1E00", "#21E1E1", "#224B0C")))
+```
+
+
+### TOTAL SYNCED DATA BY QUESTIONNAIRE TYPE {data-width=300}
+
+```{r}
+
+woreda_interview <-hh_data %>% select(Woreda) %>% group_by(Woreda) %>% 
+  summarise(count = n()) %>% drop_na() %>% 
+  hchart('pie', hcaes(x = Woreda, y = count, color=c('#5DA7DB','#2B3A55','#9BA3EB','#79DAE8'))) %>% 
+  hc_tooltip(pointFormat='<b>Proportion: </b> {point.percentage:,.2f}%') %>% 
+  hc_title(text = 'NO OF INTERVIEW BY WOREDA', style = list(fontSize = '12px', fontWeight = 'bold')) 
+woreda_interview
+
+```
+
+EXPECTED vs ACTUAL
+=====================================
+Row
+-----------------------------------------------------------------------
+
+
+### Libo Kemkem
+
+```{r}
+Libo <- hh_data %>% dplyr::filter(Woreda=="Libo Kemkem") 
+Libo<-nrow(Libo)
+valueBox(Libo, icon = "fa-bar-chart")
+```
+
+### Ebinat
+
+```{r}
+Ebinat <- hh_data %>% dplyr::filter(Woreda=="Ebinat") 
+Ebinat<-nrow(Ebinat)
+valueBox(Ebinat, icon = "fa-bar-chart")
+```
+
+### Dewa Chefa
+
+```{r}
+Dewa <- hh_data %>% dplyr::filter(Woreda=="Dewa Chefa") 
+Dewa<-nrow(Dewa)
+valueBox(Dewa, icon = "fa-bar-chart")
+```
+
+### Artuma Fursi
+
+```{r}
+Artuma <- hh_data %>% dplyr::filter(Woreda=="Artuma Fursi") 
+Artuma<-nrow(Artuma)
+valueBox(Artuma, icon = "fa-bar-chart")
+
+```
+
+### LAST UPDATED:  
+
+```{r}
+updated_time <- Sys.Date()
+
+valueBox(updated_time,icon = "fa-clock", color = "#006E7F")
+```
+
+
+
+```{r hh expected}
+Supervisor <- c("Tariku", "Habtamu", "Chernet", "Mulugeta", "Tamiru", "Biruk", "Solomon","Beshada")
+Expected <- c(626,	639,	643,	620,	701,	749,	705,	714)
+                     
+hh_exp_df <- data.frame(Supervisor, Expected)
+
+hh_data_act <- hh_data %>% select(Supervisor) %>%drop_na() %>%  group_by(Supervisor) %>% dplyr::summarise(count_by_sup = n()) %>% arrange(count_by_sup)
+
+hh_data_act$Supervisor<- factor(hh_data_act$Supervisor, levels=hh_data_act[["Supervisor"]])
+
+act_and_exp_merge <- inner_join(x = hh_data_act, y = hh_exp_df, by="Supervisor")
+```
+
+
+Column
+-----------------------------------------------------------------------
+### HOUSEHOLD (EXPECTED vs ACTUAL) {data-width=600}
+
+```{r}
+
+#plot fig
+fig2 <- act_and_exp_merge %>% plot_ly()
+fig2 <- fig2 %>% add_trace(x = ~Supervisor, y = ~count_by_sup, type = 'bar',  name = 'Actual synced', marker = list(color = '#006E7F'))
+fig2 <- fig2 %>% add_trace(x = ~Supervisor, y = ~Expected, type = 'bar', name = 'Expected data', marker = list(color = '#79DAE8'))
+fig2 <- fig2 %>% layout(xaxis = list(title = 'Supervisor'), barmode = 'group')          
+fig2 <- fig2 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig2
+
+```
+
+
+### EXPECTED vs SYNCED BY WOREDA {data-width=500}
+```{r }
+Woreda <- c("Libo Kemkem", "Ebinat", "Dewa Chefa", "Artuma Fursi")
+Expected_woreda <- c(1259,	1269,	1450,	1419)
+
+Woreda_exp_df <- data.frame(Woreda, Expected_woreda)
+
+woreda_data_act <- hh_data %>% select(Woreda) %>%drop_na() %>%  group_by(Woreda) %>% dplyr::summarise(count_by_woreda = n()) %>% arrange(count_by_woreda)
+
+woreda_data_act$Woreda<- factor(woreda_data_act$Woreda, levels=woreda_data_act[["Woreda"]])
+
+Woreda_act_and_exp_merge <- inner_join(x = woreda_data_act, y = Woreda_exp_df, by="Woreda")
+```
+
+```{r }
+fig2 <- Woreda_act_and_exp_merge %>% plot_ly()
+fig2 <- fig2 %>% add_trace(x = ~Woreda, y = ~count_by_woreda, type = 'bar',  name = 'Actual synced', marker = list(color = '#006E7F'))
+fig2 <- fig2 %>% add_trace(x = ~Woreda, y = ~Expected_woreda, type = 'bar', name = 'Expected data', marker = list(color = '#79DAE8'))
+fig2 <- fig2 %>% layout(xaxis = list(title = 'Woreda'), barmode = 'group')          
+fig2 <- fig2 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig2
+```
+
+
+
+
+
+Column 
+-----------------------------------------------------------------------
+### EBINAT WOREDA BY KEBELE {data-width=600}
+```{r}
+Ebinat_kebeles<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Ebinat")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(No_of_kebele= n())
+
+Ebinat_kebeles$Kebele<- factor(Ebinat_kebeles$Kebele, levels=Ebinat_kebeles[["Kebele"]])
+
+#plot fig 4
+
+fig5 <- Ebinat_kebeles %>% plot_ly()
+fig5 <- fig5 %>% add_trace(x = ~Kebele, y = ~No_of_kebele, type = 'bar',  name = '', marker = list(color = '#2B3A55'))
+
+fig5 <- fig5 %>% layout(title = "",
+         xaxis = list(title = ""),
+         yaxis = list(title = 'n'), barmode = 'group')
+
+fig5
+```
+
+### DEWA CHEFA WOREDA BY KEBELE {data-width=500}
+```{r}
+Dewat_kebeles<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Dewa Chefa")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(No_of_kebele= n())
+
+Dewat_kebeles$Kebele<- factor(Dewat_kebeles$Kebele, levels=Dewat_kebeles[["Kebele"]])
+
+#plot fig 4
+
+fig5 <- Dewat_kebeles %>% plot_ly()
+fig5 <- fig5 %>% add_trace(x = ~Kebele, y = ~No_of_kebele, type = 'bar',  name = '', marker = list(color = '#FFBF00'))
+
+fig5 <- fig5 %>% layout(title = "",
+         xaxis = list(title = ""),
+         yaxis = list(title = 'n'), barmode = 'group')
+
+fig5
+
+```
+
+
+### ARTUMA FURSI WOREDA BY KEBELE {data-width=600}
+```{r}
+Artuma_kebeles<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Artuma Fursi")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(No_of_kebele= n())
+
+Artuma_kebeles$Kebele<- factor(Ebinat_kebeles$Kebele, levels=Ebinat_kebeles[["Kebele"]])
+
+#plot fig 4
+
+fig5 <- Artuma_kebeles %>% plot_ly()
+fig5 <- fig5 %>% add_trace(x = ~Kebele, y = ~No_of_kebele, type = 'bar',  name = '', marker = list(color = '#2B3A55'))
+
+fig5 <- fig5 %>% layout(title = "",
+         xaxis = list(title = ""),
+         yaxis = list(title = 'n'), barmode = 'group')
+
+fig5
+```
+
+### LIBO KEMKEM WOREDA BY KEBELE {data-width=500}
+
+```{r}
+Libo_kebeles<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Libo Kemkem")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(No_of_kebele= n())
+
+Libo_kebeles$Kebele<- factor(Libo_kebeles$Kebele, levels=Libo_kebeles[["Kebele"]])
+
+
+fig5 <- Libo_kebeles %>% plot_ly()
+fig5 <- fig5 %>% add_trace(x = ~Kebele, y = ~No_of_kebele, type = 'bar',  name = '', marker = list(color = '#FFBF00'))
+
+fig5 <- fig5 %>% layout(title = "",
+         xaxis = list(title = ""),
+         yaxis = list(title = 'n'), barmode = 'group')
+
+fig5
+
+
+```
+
+ 
