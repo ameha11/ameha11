@@ -276,7 +276,7 @@ Column
 -----------------------------------------------------------------------
 ### EBINAT WOREDA BY KEBELE {data-width=600}
 ```{r}
-Ebinat_kebeles<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Ebinat")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(No_of_kebele= n())
+Ebinat_kebeles<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Ebinat")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(No_of_kebele= n()) %>% dplyr::arrange(No_of_kebele)
 
 Ebinat_kebeles$Kebele<- factor(Ebinat_kebeles$Kebele, levels=Ebinat_kebeles[["Kebele"]])
 
@@ -294,7 +294,7 @@ fig5
 
 ### DEWA CHEFA WOREDA BY KEBELE {data-width=500}
 ```{r}
-Dewat_kebeles<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Dewa Chefa")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(No_of_kebele= n())
+Dewat_kebeles<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Dewa Chefa")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(No_of_kebele= n()) %>%  dplyr::arrange(No_of_kebele)
 
 Dewat_kebeles$Kebele<- factor(Dewat_kebeles$Kebele, levels=Dewat_kebeles[["Kebele"]])
 
@@ -314,9 +314,9 @@ fig5
 
 ### ARTUMA FURSI WOREDA BY KEBELE {data-width=600}
 ```{r}
-Artuma_kebeles<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Artuma Fursi")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(No_of_kebele= n())
+Artuma_kebeles<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Artuma Fursi")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(No_of_kebele= n()) %>% dplyr::arrange(No_of_kebele)
 
-Artuma_kebeles$Kebele<- factor(Ebinat_kebeles$Kebele, levels=Ebinat_kebeles[["Kebele"]])
+Artuma_kebeles$Kebele<- factor(Artuma_kebeles$Kebele, levels=Artuma_kebeles[["Kebele"]])
 
 #plot fig 4
 
@@ -333,7 +333,7 @@ fig5
 ### LIBO KEMKEM WOREDA BY KEBELE {data-width=500}
 
 ```{r}
-Libo_kebeles<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Libo Kemkem")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(No_of_kebele= n())
+Libo_kebeles<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Libo Kemkem")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(No_of_kebele= n()) %>% dplyr::arrange(No_of_kebele)
 
 Libo_kebeles$Kebele<- factor(Libo_kebeles$Kebele, levels=Libo_kebeles[["Kebele"]])
 
