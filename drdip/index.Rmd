@@ -298,7 +298,7 @@ Column
 fig2 <- endline_merge_df %>% plot_ly()
 fig2 <- fig2 %>% add_trace(x = ~supervisor, y = ~Endline, type = 'bar',  name = 'Actual synced', marker = list(color = '#006E7F'))
 fig2 <- fig2 %>% add_trace(x = ~supervisor, y = ~Expected, type = 'bar', name = 'Expected data', marker = list(color = '#79DAE8'))
-fig2 <- fig2 %>% layout(xaxis = list(title = 'SUPERVISOR'), barmode = 'group')          
+fig2 <- fig2 %>% layout(xaxis = list(title = ''), barmode = 'group')          
 fig2 <- fig2 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
 
 fig2
@@ -378,7 +378,7 @@ fig4 <- expected_merged %>% plot_ly()
 fig4 <- fig4 %>% add_trace(x = ~supervisor, y = ~Replaced, type = 'bar',  name = 'Replaced', marker = list(color = '#0AA1DD'))
 fig4 <- fig4 %>% add_trace(x = ~supervisor, y = ~Endline, type = 'bar', name = 'Endline Found', marker = list(color = '#006E7F'))
 fig4 <- fig4 %>% add_trace(x = ~supervisor, y = ~Expected, type = 'bar', name = 'Expected', marker = list(color = '#79DAE8'))
-fig4 <- fig4 %>% layout(xaxis = list(title = 'SUPERVISOR'), barmode = 'group')          
+fig4 <- fig4 %>% layout(xaxis = list(title = ''), barmode = 'group')          
 fig4 <- fig4 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
 
 fig4
