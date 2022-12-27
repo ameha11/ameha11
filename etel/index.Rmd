@@ -1,0 +1,144 @@
+---
+title: "EIM CUSTOMER SURVEY DASHBOARD"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: row
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(haven)
+library(plyr)
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(highcharter)
+library(plotly)
+library(DT)
+library(stringr)
+library(ggplot2)
+library(viridis)
+library(hrbrthemes)
+
+```
+
+```{r}
+#Import HH Survey UNICEF_ISNP_HH_Survey_2022 Data
+data <- read_dta("C:/GCTD/csv/Interview Questions for Customers.dta")
+data <- as_factor(data)
+data$submissiondate <- as_date(data$submissiondate)
+data <- data %>% dplyr::rename("Date_of_interview" = "submissiondate")
+
+data <- data %>% mutate(enumerator = str_replace(enumerator,"Misganaw Kebde", "Misganaw"), enumerator = str_replace(enumerator, "Mengistu Manyazewal", "Mengistu"),
+enumerator = str_replace(enumerator, "Milkias Hailu", "Milkias"), enumerator = str_replace(enumerator, "Hana Getachew", "Hana"),
+enumerator = str_replace(enumerator, "Selam Mulugeta Abuhay", "Selam"), enumerator = str_replace(enumerator, "Lidet Giragn Tefera", "Lidet"), 
+enumerator = str_replace(enumerator, "Surafeal Asres", "Surafeal"), enumerator = str_replace(enumerator, "Minase Youseph", "Minase"),
+enumerator = str_replace(enumerator, "Eshetie Nigatu", "Eshetie"), enumerator = str_replace(enumerator, "Minichil Alegegn", "Minichil"),
+enumerator = str_replace(enumerator, "Fendtahun Yirsaw", "Fendtahun"), enumerator = str_replace(enumerator, "Milion Abebe", "Milion"),
+enumerator = str_replace(enumerator, "Jemal Abate", "Jemal"), enumerator = str_replace(enumerator, "Milion Abebe", "Milion"),  
+enumerator = str_replace(enumerator, "Micheal sintayehu", "Micheal"), enumerator = str_replace(enumerator, "Abebe Shimelis", "Abebe"))
+
+```
+
+HOME
+=====================================
+
+
+```{r Endline}
+Misganaw <-	data %>% filter(enumerator==	"Misganaw"	) %>% nrow()
+Mengistu	 <-	data %>% filter(enumerator==	"Mengistu"	) %>% nrow()
+Milkias	 <-	data %>% filter(enumerator==	"Milkias"	) %>% nrow()
+Hana	 <-	data %>% filter(enumerator==	"Hana"	) %>% nrow()
+Selam	 <-	data %>% filter(enumerator==	"Selam"	) %>% nrow()
+Lidet	 <-	data %>% filter(enumerator==	"Lidet"	) %>% nrow()
+Surafeal	 <-	data %>% filter(enumerator==	"Surafeal"	) %>% nrow()
+Minase	 <-	data %>% filter(enumerator==	"Minase"	) %>% nrow()
+Eshetie	 <-	data %>% filter(enumerator==	"Eshetie"	) %>% nrow()
+Minichil	 <-	data %>% filter(enumerator==	"Minichil"	) %>% nrow()
+Fendtahun	 <-	data %>% filter(enumerator==	"Fendtahun"	) %>% nrow()
+Milion	 <-	data %>% filter(enumerator==	"Milion"	) %>% nrow()
+Micheal	 <-	data %>% filter(enumerator==	"Micheal"	) %>% nrow()
+Lulseged	 <-	data %>% filter(enumerator==	"Lulseged"	) %>% nrow()
+Jemal	 <-	data %>% filter(enumerator==	"Jemal"	) %>% nrow()
+Abebe	 <-	data %>% filter(enumerator==	"Abebe"	) %>% nrow()
+
+```
+
+
+
+Column 
+-----------------------------------------------------------------------
+
+### NO. OF INTERVIEWS  BY ENUMERATOR {data-width=600}
+
+```{r}
+sup_name <- c("Misganaw",	"Mengistu",	"Milkias",	"Hana",	"Selam",	"Lidet",	"Surafeal",	"Minase",	"Eshetie",	"Minichil",	"Fendtahun",	"Milion",	"Micheal",	"Lulseged",	"Jemal",	"Abebe")
+sup_count <- c(Misganaw,	Mengistu,	Milkias,	Hana,	Selam,	Lidet,	Surafeal,	Minase,	Eshetie,	Minichil,	Fendtahun,	Milion,	Micheal,	Lulseged,	Jemal,	Abebe)
+
+
+sup_data <- data.frame(sup_name, sup_count)
+sup_data <- sup_data %>% arrange(sup_count)
+#to arrange
+sup_data$sup_name<- factor(sup_data$sup_name, levels=sup_data[["sup_name"]])
+
+#plot fig
+fig1 <- sup_data %>% plot_ly()
+fig1 <- fig1 %>% add_trace(x = ~sup_name, y = ~sup_count, type = 'bar',  name = 'Household data', marker = list(color = '#006E7F'))
+
+fig1 <- fig1 %>% layout(xaxis = list(title = 'Enumerator'), barmode = 'group')          
+fig1 <- fig1 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig1
+
+```
+
+### NO. OF INTERVIEWS  BY REGION {data-width=400}
+
+```{r }
+data %>% 
+  dplyr::count(region) %>%
+  arrange(-n) %>% 
+  hchart('bar', hcaes(x = 'region', y = 'n'), color_stops(n=4, colors = c("#F65A83", "#FF1E00", "#21E1E1", "#224B0C")))
+```
+
+Column 
+-----------------------------------------------------------------------
+### NO. OF INTERVIEWS  BY TOWN {data-width=400}
+```{r}
+town_interview <- data %>% select(town) %>% group_by(town) %>% dplyr::summarise(count = n()) %>% arrange(count)
+
+town_interview$town<- factor(town_interview$town, levels=town_interview[["town"]])
+
+fig1 <- town_interview %>% plot_ly()
+fig1 <- fig1 %>% add_trace(x = ~town, y = ~count, type = 'bar',  name = 'Household data', marker = list(color = '#FFBF00'))
+
+fig1 <- fig1 %>% layout(xaxis = list(title = 'Enumerator'), barmode = 'group')          
+fig1 <- fig1 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig1
+```
+
+
+### TOTAL INTERVIEW BY GENDER {data-width=300}
+
+```{r}
+
+gender<-data %>% select(sex) %>% group_by(sex) %>% 
+  summarise(count = n()) %>% drop_na() %>% 
+  hchart('pie', hcaes(x = sex, y = count, color=c('#2B3A55','#FFBF00'))) %>% 
+  hc_tooltip(pointFormat='<b>Proportion: </b> {point.percentage:,.2f}%') %>% 
+  hc_title(text = 'Interview by gender', style = list(fontSize = '12px', fontWeight = 'bold')) 
+gender
+```
+
+### TOTAL INTERVIEW BY LOCATION {data-width=300}
+
+```{r}
+location <-data %>% select(location) %>% group_by(location) %>% 
+  summarise(count = n()) %>% drop_na() %>% 
+  hchart('pie', hcaes(x = location, y = count, color='location')) %>% 
+  hc_tooltip(pointFormat='<b>Proportion: </b> {point.percentage:,.2f}%') %>% 
+  hc_title(text = 'Interview by location', style = list(fontSize = '12px', fontWeight = 'bold')) 
+location
+```
