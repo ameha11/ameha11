@@ -137,7 +137,7 @@ gender
 ```{r}
 location <-data %>% select(location) %>% group_by(location) %>% 
   summarise(count = n()) %>% drop_na() %>% 
-  hchart('pie', hcaes(x = location, y = count, color='location')) %>% 
+  hchart('pie', hcaes(x = location, y = count, color=c('#2B3A55','#FFBF00'))) %>% 
   hc_tooltip(pointFormat='<b>Proportion: </b> {point.percentage:,.2f}%') %>% 
   hc_title(text = '', style = list(fontSize = '12px', fontWeight = 'bold')) 
 location
