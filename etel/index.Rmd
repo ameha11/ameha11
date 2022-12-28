@@ -128,7 +128,7 @@ gender<-data %>% select(sex) %>% group_by(sex) %>%
   summarise(count = n()) %>% drop_na() %>% 
   hchart('pie', hcaes(x = sex, y = count, color=c('#2B3A55','#FFBF00'))) %>% 
   hc_tooltip(pointFormat='<b>Proportion: </b> {point.percentage:,.2f}%') %>% 
-  hc_title(text = 'Interview by gender', style = list(fontSize = '12px', fontWeight = 'bold')) 
+  hc_title(text = '', style = list(fontSize = '12px', fontWeight = 'bold')) 
 gender
 ```
 
@@ -139,6 +139,6 @@ location <-data %>% select(location) %>% group_by(location) %>%
   summarise(count = n()) %>% drop_na() %>% 
   hchart('pie', hcaes(x = location, y = count, color='location')) %>% 
   hc_tooltip(pointFormat='<b>Proportion: </b> {point.percentage:,.2f}%') %>% 
-  hc_title(text = 'Interview by location', style = list(fontSize = '12px', fontWeight = 'bold')) 
+  hc_title(text = '', style = list(fontSize = '12px', fontWeight = 'bold')) 
 location
 ```

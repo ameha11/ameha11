@@ -35,7 +35,8 @@ Supervisor = str_replace(Supervisor, "Habtamu Getachew", "Habtamu"), Supervisor 
 Supervisor = str_replace(Supervisor, "Tamiru Shume", "Tamiru"), Supervisor = str_replace(Supervisor, "Biruk Yimer", "Biruk"), 
 Supervisor = str_replace(Supervisor, "Solomon Alemu", "Solomon"), Supervisor = str_replace(Supervisor, "Beshada Woltegy", "Beshada"))
 
-
+sample_data <- read_dta("C:/Users/Admin/Desktop/Backup/Documents/Survey - Projects/UNICEF/UNICEF ISPN 2022/Download Data/raw/UNICEF_ISNP_HH_Survey_2022/CBHI Sampling.dta")
+sample_data <- as_factor(sample_data)
 ```
 
 HOME
@@ -77,12 +78,12 @@ valueBox(Artuma, icon = "fa-bar-chart")
 
 ```
 
-### LAST UPDATED:  
+### TOTAL SYNCED:  
 
 ```{r}
-updated_time <- Sys.Date()
-
-valueBox(updated_time,icon = "fa-clock", color = "#006E7F")
+#updated_time <- Sys.Date()
+total_woreda <- Artuma + Dewa + Ebinat + Libo
+valueBox(total_woreda,icon = "fa-clock", color = "#006E7F")
 ```
 
 ```{r Endline}
@@ -150,7 +151,7 @@ hh_data %>%
 ```
 
 
-### TOTAL SYNCED DATA BY QUESTIONNAIRE TYPE {data-width=300}
+### TOTAL SYNCED DATA BY WOREDA {data-width=300}
 
 ```{r}
 
@@ -158,7 +159,7 @@ woreda_interview <-hh_data %>% select(Woreda) %>% group_by(Woreda) %>%
   summarise(count = n()) %>% drop_na() %>% 
   hchart('pie', hcaes(x = Woreda, y = count, color=c('#5DA7DB','#2B3A55','#9BA3EB','#79DAE8'))) %>% 
   hc_tooltip(pointFormat='<b>Proportion: </b> {point.percentage:,.2f}%') %>% 
-  hc_title(text = 'NO OF INTERVIEW BY WOREDA', style = list(fontSize = '12px', fontWeight = 'bold')) 
+  hc_title(text = '', style = list(fontSize = '12px', fontWeight = 'bold')) 
 woreda_interview
 
 ```
@@ -202,14 +203,14 @@ valueBox(Artuma, icon = "fa-bar-chart")
 
 ```
 
-### LAST UPDATED:  
+
+### TOTAL SYNCED:  
 
 ```{r}
-updated_time <- Sys.Date()
-
-valueBox(updated_time,icon = "fa-clock", color = "#006E7F")
+#updated_time <- Sys.Date()
+total_woreda <- Artuma + Dewa + Ebinat + Libo
+valueBox(total_woreda,icon = "fa-clock", color = "#006E7F")
 ```
-
 
 
 ```{r hh expected}
@@ -228,7 +229,7 @@ act_and_exp_merge <- inner_join(x = hh_data_act, y = hh_exp_df, by="Supervisor")
 
 Column
 -----------------------------------------------------------------------
-### HOUSEHOLD (EXPECTED vs ACTUAL) {data-width=600}
+### HOUSEHOLD (EXPECTED vs ACTUAL) {data-width=500}
 
 ```{r}
 
@@ -270,84 +271,111 @@ fig2
 
 
 
-
-
 Column 
 -----------------------------------------------------------------------
 ### EBINAT WOREDA BY KEBELE {data-width=600}
+
 ```{r}
-Ebinat_kebeles<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Ebinat")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(No_of_kebele= n()) %>% dplyr::arrange(No_of_kebele)
+#kebele covered
+Ebinat_keb_cov<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Ebinat")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(kebele_covered = n()) %>% dplyr::arrange(kebele_covered)
 
-Ebinat_kebeles$Kebele<- factor(Ebinat_kebeles$Kebele, levels=Ebinat_kebeles[["Kebele"]])
+#Ebinat_keb_cov$kebele_covered<- factor(Ebinat_keb_cov$kebele_covered, levels=Ebinat_keb_cov[["kebele_covered"]]) 
 
-#plot fig 4
+#kebele expected
+Ebnat_keb_exp <- sample_data %>% dplyr::filter(Woreda=="Ebinat")%>%
+   dplyr::arrange(sample) %>% dplyr::select(-Woreda)
 
-fig5 <- Ebinat_kebeles %>% plot_ly()
-fig5 <- fig5 %>% add_trace(x = ~Kebele, y = ~No_of_kebele, type = 'bar',  name = '', marker = list(color = '#2B3A55'))
 
-fig5 <- fig5 %>% layout(title = "",
-         xaxis = list(title = ""),
-         yaxis = list(title = 'n'), barmode = 'group')
+Ebnat_prog <- inner_join(x = Ebinat_keb_cov, y = Ebnat_keb_exp, by="Kebele")
 
-fig5
+Ebnat_prog$Kebele<- factor(Ebnat_prog$Kebele, levels=Ebnat_prog[["Kebele"]]) 
+
+
+fig2 <- Ebnat_prog %>% plot_ly()
+fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~kebele_covered, type = 'bar',  name = 'Actual', marker = list(color = '#FFBF00'))
+fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~sample, type = 'bar', name = 'Expected', marker = list(color = '#2B3A55'))
+fig2 <- fig2 %>% layout(xaxis = list(title = 'Kebele'), barmode = 'group')          
+fig2 <- fig2 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig2
+
 ```
 
-### DEWA CHEFA WOREDA BY KEBELE {data-width=500}
+### DEWA CHEFA WOREDA BY KEBELE {data-width=600}
 ```{r}
-Dewat_kebeles<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Dewa Chefa")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(No_of_kebele= n()) %>%  dplyr::arrange(No_of_kebele)
+Dewa_keb_cov<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Dewa Chefa")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(kebele_covered = n()) %>% dplyr::arrange(kebele_covered)
 
-Dewat_kebeles$Kebele<- factor(Dewat_kebeles$Kebele, levels=Dewat_kebeles[["Kebele"]])
 
-#plot fig 4
+#kebele expected
+Dewa_keb_exp <- sample_data %>% dplyr::filter(Woreda=="Dewa Chefa")%>%
+   dplyr::arrange(sample) %>% dplyr::select(-Woreda)
 
-fig5 <- Dewat_kebeles %>% plot_ly()
-fig5 <- fig5 %>% add_trace(x = ~Kebele, y = ~No_of_kebele, type = 'bar',  name = '', marker = list(color = '#FFBF00'))
 
-fig5 <- fig5 %>% layout(title = "",
-         xaxis = list(title = ""),
-         yaxis = list(title = 'n'), barmode = 'group')
+Dewa_prog <- inner_join(x = Dewa_keb_cov, y = Dewa_keb_exp, by="Kebele")
 
-fig5
+Dewa_prog$Kebele<- factor(Dewa_prog$Kebele, levels=Dewa_prog[["Kebele"]]) 
+
+
+fig2 <- Dewa_prog %>% plot_ly()
+fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~kebele_covered, type = 'bar',  name = 'Actual', marker = list(color = '#FFBF00'))
+fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~sample, type = 'bar', name = 'Expected', marker = list(color = '#2B3A55'))
+fig2 <- fig2 %>% layout(xaxis = list(title = 'Kebele'), barmode = 'group')          
+fig2 <- fig2 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig2
+
 
 ```
 
 
 ### ARTUMA FURSI WOREDA BY KEBELE {data-width=600}
 ```{r}
-Artuma_kebeles<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Artuma Fursi")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(No_of_kebele= n()) %>% dplyr::arrange(No_of_kebele)
+Artuma_keb_cov<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Artuma Fursi")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(kebele_covered = n()) %>% dplyr::arrange(kebele_covered)
 
-Artuma_kebeles$Kebele<- factor(Artuma_kebeles$Kebele, levels=Artuma_kebeles[["Kebele"]])
 
-#plot fig 4
+#kebele expected
+Artuma_keb_exp <- sample_data %>% dplyr::filter(Woreda=="Artuma Fursi")%>%
+   dplyr::arrange(sample) %>% dplyr::select(-Woreda)
 
-fig5 <- Artuma_kebeles %>% plot_ly()
-fig5 <- fig5 %>% add_trace(x = ~Kebele, y = ~No_of_kebele, type = 'bar',  name = '', marker = list(color = '#2B3A55'))
 
-fig5 <- fig5 %>% layout(title = "",
-         xaxis = list(title = ""),
-         yaxis = list(title = 'n'), barmode = 'group')
+Artuma_prog <- inner_join(x = Artuma_keb_cov, y = Artuma_keb_exp, by="Kebele")
 
-fig5
+Artuma_prog$Kebele<- factor(Artuma_prog$Kebele, levels=Artuma_prog[["Kebele"]]) 
+
+
+fig2 <- Artuma_prog %>% plot_ly()
+fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~kebele_covered, type = 'bar',  name = 'Actual', marker = list(color = '#FFBF00'))
+fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~sample, type = 'bar', name = 'Expected', marker = list(color = '#2B3A55'))
+fig2 <- fig2 %>% layout(xaxis = list(title = 'Kebele'), barmode = 'group')          
+fig2 <- fig2 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig2
+
 ```
 
-### LIBO KEMKEM WOREDA BY KEBELE {data-width=500}
+### LIBO KEMKEM WOREDA BY KEBELE {data-width=600}
 
 ```{r}
-Libo_kebeles<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Libo Kemkem")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(No_of_kebele= n()) %>% dplyr::arrange(No_of_kebele)
-
-Libo_kebeles$Kebele<- factor(Libo_kebeles$Kebele, levels=Libo_kebeles[["Kebele"]])
+Libo_keb_cov<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Libo Kemkem")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(kebele_covered = n()) %>% dplyr::arrange(kebele_covered)
 
 
-fig5 <- Libo_kebeles %>% plot_ly()
-fig5 <- fig5 %>% add_trace(x = ~Kebele, y = ~No_of_kebele, type = 'bar',  name = '', marker = list(color = '#FFBF00'))
+#kebele expected
+Libo_keb_exp <- sample_data %>% dplyr::filter(Woreda=="Libo Kemkem")%>%
+   dplyr::arrange(sample) %>% dplyr::select(-Woreda)
 
-fig5 <- fig5 %>% layout(title = "",
-         xaxis = list(title = ""),
-         yaxis = list(title = 'n'), barmode = 'group')
 
-fig5
+Libo_prog <- inner_join(x = Libo_keb_cov, y = Libo_keb_exp, by="Kebele")
 
+Libo_prog$Kebele<- factor(Libo_prog$Kebele, levels=Libo_prog[["Kebele"]]) 
+
+
+fig2 <- Libo_prog %>% plot_ly()
+fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~kebele_covered, type = 'bar',  name = 'Actual', marker = list(color = '#FFBF00'))
+fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~sample, type = 'bar', name = 'Expected', marker = list(color = '#2B3A55'))
+fig2 <- fig2 %>% layout(xaxis = list(title = 'Kebele'), barmode = 'group')          
+fig2 <- fig2 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig2
 
 ```
 
- 
