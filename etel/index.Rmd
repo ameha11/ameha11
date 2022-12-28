@@ -37,7 +37,7 @@ enumerator = str_replace(enumerator, "Surafeal Asres", "Surafeal"), enumerator =
 enumerator = str_replace(enumerator, "Eshetie Nigatu", "Eshetie"), enumerator = str_replace(enumerator, "Minichil Alegegn", "Minichil"),
 enumerator = str_replace(enumerator, "Fendtahun Yirsaw", "Fendtahun"), enumerator = str_replace(enumerator, "Milion Abebe", "Milion"),
 enumerator = str_replace(enumerator, "Jemal Abate", "Jemal"), enumerator = str_replace(enumerator, "Milion Abebe", "Milion"),  
-enumerator = str_replace(enumerator, "Micheal sintayehu", "Micheal"), enumerator = str_replace(enumerator, "Abebe Shimelis", "Abebe"))
+enumerator = str_replace(enumerator, "Micheal sintayehu", "Micheal"), enumerator = str_replace(enumerator, "Abebe Shimelis", "Abebe"), enumerator = str_replace(enumerator, "Lulseged Abate Dessie", "Lulseged"))
 
 ```
 
