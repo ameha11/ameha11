@@ -278,9 +278,6 @@ Column
 ```{r}
 #kebele covered
 Ebinat_keb_cov<- hh_data %>% dplyr::select('Woreda', 'Kebele') %>% drop_na()%>%  dplyr::filter(Woreda=="Ebinat")%>% dplyr::group_by(Kebele) %>% dplyr::summarise(kebele_covered = n()) %>% dplyr::arrange(kebele_covered)
-
-#Ebinat_keb_cov$kebele_covered<- factor(Ebinat_keb_cov$kebele_covered, levels=Ebinat_keb_cov[["kebele_covered"]]) 
-
 #kebele expected
 Ebnat_keb_exp <- sample_data %>% dplyr::filter(Woreda=="Ebinat")%>%
    dplyr::arrange(sample) %>% dplyr::select(-Woreda)
@@ -296,6 +293,7 @@ fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~kebele_covered, type = 'bar',  name
 fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~sample, type = 'bar', name = 'Expected', marker = list(color = '#2B3A55'))
 fig2 <- fig2 %>% layout(xaxis = list(title = 'Kebele'), barmode = 'group')          
 fig2 <- fig2 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+fig2 <- fig2 %>% layout(legend = list(x = 0, y = 1, orientation = 'h'))
 
 fig2
 
@@ -321,9 +319,9 @@ fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~kebele_covered, type = 'bar',  name
 fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~sample, type = 'bar', name = 'Expected', marker = list(color = '#2B3A55'))
 fig2 <- fig2 %>% layout(xaxis = list(title = 'Kebele'), barmode = 'group')          
 fig2 <- fig2 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+fig2 <- fig2 %>% layout(legend = list(x = 0, y = 1, orientation = 'h'))
 
 fig2
-
 
 ```
 
@@ -348,6 +346,7 @@ fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~kebele_covered, type = 'bar',  name
 fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~sample, type = 'bar', name = 'Expected', marker = list(color = '#2B3A55'))
 fig2 <- fig2 %>% layout(xaxis = list(title = 'Kebele'), barmode = 'group')          
 fig2 <- fig2 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+fig2 <- fig2 %>% layout(legend = list(x = 0, y = 1, orientation = 'h'))
 
 fig2
 
@@ -374,6 +373,7 @@ fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~kebele_covered, type = 'bar',  name
 fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~sample, type = 'bar', name = 'Expected', marker = list(color = '#2B3A55'))
 fig2 <- fig2 %>% layout(xaxis = list(title = 'Kebele'), barmode = 'group')          
 fig2 <- fig2 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+fig2 <- fig2 %>% layout(legend = list(x = 0, y = 1, orientation = 'h'))
 
 fig2
 

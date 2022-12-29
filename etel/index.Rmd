@@ -37,7 +37,11 @@ enumerator = str_replace(enumerator, "Surafeal Asres", "Surafeal"), enumerator =
 enumerator = str_replace(enumerator, "Eshetie Nigatu", "Eshetie"), enumerator = str_replace(enumerator, "Minichil Alegegn", "Minichil"),
 enumerator = str_replace(enumerator, "Fendtahun Yirsaw", "Fendtahun"), enumerator = str_replace(enumerator, "Milion Abebe", "Milion"),
 enumerator = str_replace(enumerator, "Jemal Abate", "Jemal"), enumerator = str_replace(enumerator, "Milion Abebe", "Milion"),  
-enumerator = str_replace(enumerator, "Micheal sintayehu", "Micheal"), enumerator = str_replace(enumerator, "Abebe Shimelis", "Abebe"), enumerator = str_replace(enumerator, "Lulseged Abate Dessie", "Lulseged"))
+enumerator = str_replace(enumerator, "Micheal sintayehu", "Micheal"), enumerator = str_replace(enumerator, "Abebe Shimelis", "Abebe"), enumerator = str_replace(enumerator, "Lulseged Abate Dessie", "Lulseged"), enumerator = str_replace(enumerator, "Girmachew", "Girmachew"))
+
+
+data <- data %>% mutate(region = str_replace(region,"Benishangul-Gumz", "Benishangul"))
+
 
 ```
 
@@ -62,7 +66,7 @@ Micheal	 <-	data %>% filter(enumerator==	"Micheal"	) %>% nrow()
 Lulseged	 <-	data %>% filter(enumerator==	"Lulseged"	) %>% nrow()
 Jemal	 <-	data %>% filter(enumerator==	"Jemal"	) %>% nrow()
 Abebe	 <-	data %>% filter(enumerator==	"Abebe"	) %>% nrow()
-
+Girmachew	 <-	data %>% filter(enumerator==	"Girmachew"	) %>% nrow()
 ```
 
 
@@ -73,8 +77,8 @@ Column
 ### NO. OF INTERVIEWS  BY ENUMERATOR {data-width=600}
 
 ```{r}
-sup_name <- c("Misganaw",	"Mengistu",	"Milkias",	"Hana",	"Selam",	"Lidet",	"Surafeal",	"Minase",	"Eshetie",	"Minichil",	"Fendtahun",	"Milion",	"Micheal",	"Lulseged",	"Jemal",	"Abebe")
-sup_count <- c(Misganaw,	Mengistu,	Milkias,	Hana,	Selam,	Lidet,	Surafeal,	Minase,	Eshetie,	Minichil,	Fendtahun,	Milion,	Micheal,	Lulseged,	Jemal,	Abebe)
+sup_name <- c("Misganaw",	"Mengistu",	"Milkias",	"Hana",	"Selam",	"Lidet",	"Surafeal",	"Minase",	"Eshetie",	"Minichil",	"Fendtahun",	"Milion",	"Micheal",	"Lulseged",	"Jemal",	"Abebe", "Girmachew")
+sup_count <- c(Misganaw,	Mengistu,	Milkias,	Hana,	Selam,	Lidet,	Surafeal,	Minase,	Eshetie,	Minichil,	Fendtahun,	Milion,	Micheal,	Lulseged,	Jemal,	Abebe, Girmachew)
 
 
 sup_data <- data.frame(sup_name, sup_count)
@@ -86,14 +90,14 @@ sup_data$sup_name<- factor(sup_data$sup_name, levels=sup_data[["sup_name"]])
 fig1 <- sup_data %>% plot_ly()
 fig1 <- fig1 %>% add_trace(x = ~sup_name, y = ~sup_count, type = 'bar',  name = 'Household data', marker = list(color = '#006E7F'))
 
-fig1 <- fig1 %>% layout(xaxis = list(title = 'Enumerator'), barmode = 'group')          
+fig1 <- fig1 %>% layout(xaxis = list(title = ''), barmode = 'group')          
 fig1 <- fig1 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
 
 fig1
 
 ```
 
-### NO. OF INTERVIEWS  BY REGION {data-width=400}
+### NO. OF INTERVIEWS  BY REGION {data-width=300}
 
 ```{r }
 data %>% 
@@ -101,6 +105,7 @@ data %>%
   arrange(-n) %>% 
   hchart('bar', hcaes(x = 'region', y = 'n'), color_stops(n=4, colors = c("#F65A83", "#FF1E00", "#21E1E1", "#224B0C")))
 ```
+
 
 Column 
 -----------------------------------------------------------------------
@@ -113,7 +118,7 @@ town_interview$town<- factor(town_interview$town, levels=town_interview[["town"]
 fig1 <- town_interview %>% plot_ly()
 fig1 <- fig1 %>% add_trace(x = ~town, y = ~count, type = 'bar',  name = 'Household data', marker = list(color = '#FFBF00'))
 
-fig1 <- fig1 %>% layout(xaxis = list(title = 'Enumerator'), barmode = 'group')          
+fig1 <- fig1 %>% layout(xaxis = list(title = ''), barmode = 'group')          
 fig1 <- fig1 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
 
 fig1
