@@ -20,6 +20,7 @@ library(stringr)
 library(ggplot2)
 library(viridis)
 library(hrbrthemes)
+library(scales)
 
 ```
 
@@ -291,7 +292,7 @@ Ebnat_prog$Kebele<- factor(Ebnat_prog$Kebele, levels=Ebnat_prog[["Kebele"]])
 fig2 <- Ebnat_prog %>% plot_ly()
 fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~kebele_covered, type = 'bar',  name = 'Actual', marker = list(color = '#FFBF00'))
 fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~sample, type = 'bar', name = 'Expected', marker = list(color = '#2B3A55'))
-fig2 <- fig2 %>% layout(xaxis = list(title = 'Kebele'), barmode = 'group')          
+fig2 <- fig2 %>% layout(xaxis = list(title = ''), barmode = 'group')          
 fig2 <- fig2 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
 fig2 <- fig2 %>% layout(legend = list(x = 0, y = 1, orientation = 'h'))
 
@@ -317,7 +318,7 @@ Dewa_prog$Kebele<- factor(Dewa_prog$Kebele, levels=Dewa_prog[["Kebele"]])
 fig2 <- Dewa_prog %>% plot_ly()
 fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~kebele_covered, type = 'bar',  name = 'Actual', marker = list(color = '#FFBF00'))
 fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~sample, type = 'bar', name = 'Expected', marker = list(color = '#2B3A55'))
-fig2 <- fig2 %>% layout(xaxis = list(title = 'Kebele'), barmode = 'group')          
+fig2 <- fig2 %>% layout(xaxis = list(title = ''), barmode = 'group')          
 fig2 <- fig2 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
 fig2 <- fig2 %>% layout(legend = list(x = 0, y = 1, orientation = 'h'))
 
@@ -344,7 +345,7 @@ Artuma_prog$Kebele<- factor(Artuma_prog$Kebele, levels=Artuma_prog[["Kebele"]])
 fig2 <- Artuma_prog %>% plot_ly()
 fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~kebele_covered, type = 'bar',  name = 'Actual', marker = list(color = '#FFBF00'))
 fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~sample, type = 'bar', name = 'Expected', marker = list(color = '#2B3A55'))
-fig2 <- fig2 %>% layout(xaxis = list(title = 'Kebele'), barmode = 'group')          
+fig2 <- fig2 %>% layout(xaxis = list(title = ''), barmode = 'group')          
 fig2 <- fig2 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
 fig2 <- fig2 %>% layout(legend = list(x = 0, y = 1, orientation = 'h'))
 
@@ -371,7 +372,7 @@ Libo_prog$Kebele<- factor(Libo_prog$Kebele, levels=Libo_prog[["Kebele"]])
 fig2 <- Libo_prog %>% plot_ly()
 fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~kebele_covered, type = 'bar',  name = 'Actual', marker = list(color = '#FFBF00'))
 fig2 <- fig2 %>% add_trace(x = ~Kebele, y = ~sample, type = 'bar', name = 'Expected', marker = list(color = '#2B3A55'))
-fig2 <- fig2 %>% layout(xaxis = list(title = 'Kebele'), barmode = 'group')          
+fig2 <- fig2 %>% layout(xaxis = list(title = ''), barmode = 'group')          
 fig2 <- fig2 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
 fig2 <- fig2 %>% layout(legend = list(x = 0, y = 1, orientation = 'h'))
 
@@ -379,3 +380,157 @@ fig2
 
 ```
 
+KPI
+=====================================
+
+Row
+-----------------------------------------------------------------------
+
+### Libo Kemkem
+
+```{r}
+Libo <- hh_data %>% dplyr::filter(Woreda=="Libo Kemkem") 
+Libo<-nrow(Libo)
+valueBox(Libo, icon = "fa-bar-chart")
+```
+
+### Ebinat
+
+```{r}
+Ebinat <- hh_data %>% dplyr::filter(Woreda=="Ebinat") 
+Ebinat<-nrow(Ebinat)
+valueBox(Ebinat, icon = "fa-bar-chart")
+```
+
+### Dewa Chefa
+
+```{r}
+Dewa <- hh_data %>% dplyr::filter(Woreda=="Dewa Chefa") 
+Dewa<-nrow(Dewa)
+valueBox(Dewa, icon = "fa-bar-chart")
+```
+
+### Artuma Fursi
+
+```{r}
+Artuma <- hh_data %>% dplyr::filter(Woreda=="Artuma Fursi") 
+Artuma<-nrow(Artuma)
+valueBox(Artuma, icon = "fa-bar-chart")
+
+```
+
+### TOTAL SYNCED:  
+
+```{r}
+#updated_time <- Sys.Date()
+total_woreda <- Artuma + Dewa + Ebinat + Libo
+valueBox(total_woreda,icon = "fa-clock", color = "#006E7F")
+```
+
+Column
+-----------------------------------------------------------------------
+### Enrolling in CBHI or other health insurance scheme {data-width=300}
+
+```{r}
+CBHI_card <-hh_data %>% select(S4b_6) %>% group_by(S4b_6) %>% 
+  summarise(count = n()) %>% drop_na() %>% 
+  hchart('pie', hcaes(x = S4b_6, y = count, color=c('#2B3A55','#9BA3EB','#79DAE8'))) %>% 
+  hc_tooltip(pointFormat='<b>Proportion: </b> {point.percentage:,.2f}%') %>% 
+  hc_title(text = '', style = list(fontSize = '12px', fontWeight = 'bold')) 
+CBHI_card
+```
+
+### Does the household hold a valid CBHI card {data-width=300}
+```{r}
+insurance_schema <-hh_data %>% select(S4b_12) %>% group_by(S4b_12) %>% 
+  summarise(count = n()) %>% drop_na() %>% 
+  hchart('pie', hcaes(x = S4b_12, y = count, color=c('#5DA7DB','#2B3A55','#9BA3EB','#79DAE8'))) %>% 
+  hc_tooltip(pointFormat='<b>Proportion: </b> {point.percentage:,.2f}%') %>% 
+  hc_title(text = '', style = list(fontSize = '12px', fontWeight = 'bold')) 
+insurance_schema
+
+```
+
+
+```{r}
+phy_health <- hh_data %>% 
+  group_by(Woreda, MA5) %>% 
+  count(name = "n_answers") %>% 
+  group_by(Woreda) %>% 
+  mutate(percent_answers = n_answers / sum(n_answers)) %>% 
+  ungroup() %>% 
+  drop_na() %>% 
+  mutate(percent_answers_label = percent(percent_answers, accuracy = 1))
+phy_health
+```
+
+
+```{r}
+phy_health_summary <- phy_health %>%
+   mutate(percent_answers = if_else(MA5 %in% c( "Poor","Fair"), -percent_answers, percent_answers)) %>% 
+   mutate(percent_answers_label = percent(percent_answers, accuracy = 1))
+ phy_health_summary
+
+```
+
+
+```{r}
+phy_health_summary_good_label <- phy_health_summary %>%
+  mutate(percent_answers_label = abs(percent_answers)) %>% 
+  mutate(percent_answers_label = percent(percent_answers_label, accuracy = 1))
+phy_health_summary_good_label
+```
+
+
+```{r}
+phy_health_summary_driving_good_label <- phy_health_summary %>%
+  mutate(percent_answers_label = abs(percent_answers)) %>% 
+  mutate(percent_answers_label = percent(percent_answers_label, accuracy = 1))
+phy_health_summary_driving_good_label
+```
+
+
+
+```{r}
+school_quality_summary_diverging_right_order <- phy_health_summary_driving_good_label %>% 
+  mutate(MA5 = fct_relevel(MA5,
+                               "Fair", "Poor",  "Good", "Very Good", "Excellent"),
+         MA5 = fct_rev(MA5)) 
+school_quality_summary_diverging_right_order
+```
+
+
+
+
+
+### Physical health in general {data-width=400}
+```{r}
+school_quality_summary_diverging_right_order %>%
+  ggplot(aes(x = Woreda, 
+             y = percent_answers,
+             fill = MA5)) +
+  geom_col() +
+  geom_text(aes(label = percent_answers_label),
+            position = position_stack(vjust = 0.5),
+            color = "white",
+            fontface = "bold") +
+  coord_flip() +
+  scale_x_discrete() +
+  scale_fill_manual(breaks = c("Poor", "Fair", "Good", "Very Good", "Excellent"),
+                       values = c(
+                      "Poor" = "darkorange3",
+                      "Fair" = "orange",
+                      "Good" = "deepskyblue",
+                      "Very Good" = "deepskyblue4",
+                      "Excellent" = "#0A2647"
+                    )) +
+  labs(title = "",
+       x = NULL,
+       fill = NULL) +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        panel.grid = element_blank(),
+        legend.position = "top")
+
+```

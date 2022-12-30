@@ -47,7 +47,16 @@ data <- data %>% mutate(region = str_replace(region,"Benishangul-Gumz", "Benisha
 
 HOME
 =====================================
+Row
+-----------------------------------------------------------------------
 
+
+### TOTAL SYNCED
+
+```{r}
+total_interview<-nrow(data)
+valueBox(total_interview, icon = "fa-bar-chart")
+```
 
 ```{r Endline}
 Misganaw <-	data %>% filter(enumerator==	"Misganaw"	) %>% nrow()
