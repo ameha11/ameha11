@@ -4,9 +4,11 @@ output:
   flexdashboard::flex_dashboard:
     orientation: row
     vertical_layout: fill
+#How to Make a Diverging Bar Chart in R
 ---
 
 ```{r setup, include=FALSE}
+
 library(flexdashboard)
 library(haven)
 library(plyr)
@@ -84,7 +86,7 @@ valueBox(Artuma, icon = "fa-bar-chart")
 ```{r}
 #updated_time <- Sys.Date()
 total_woreda <- Artuma + Dewa + Ebinat + Libo
-valueBox(total_woreda,icon = "fa-clock", color = "#006E7F")
+valueBox(total_woreda,icon = "fa-clock", color = "#FFBF00")
 ```
 
 ```{r Endline}
@@ -102,7 +104,7 @@ Beshada <- hh_data %>% filter(Supervisor=="Beshada") %>% nrow()
 
 Column {.tabset}
 -----------------------------------------------------------------------
-### HOUSEHOLD DATA DAILY PROGRESS BY Supervisor
+### HOUSEHOLD DATA DAILY PROGRESS BY SUPERVISOR
 
 ```{r}
 hh_data %>% select('Date_of_interview', 'Supervisor') %>% 
@@ -111,7 +113,7 @@ hh_data %>% select('Date_of_interview', 'Supervisor') %>%
   hchart('spline', hcaes(x = 'Date_of_interview', y = 'n', group = "Supervisor"))
 ```
 
-### COMMUNITY DATA DAILY PROGRESS BY Supervisor
+### COMMUNITY DATA DAILY PROGRESS BY SUPERVISOR
 ```{r}
 
 ```
@@ -210,7 +212,7 @@ valueBox(Artuma, icon = "fa-bar-chart")
 ```{r}
 #updated_time <- Sys.Date()
 total_woreda <- Artuma + Dewa + Ebinat + Libo
-valueBox(total_woreda,icon = "fa-clock", color = "#006E7F")
+valueBox(total_woreda,icon = "fa-clock", color = "#FFBF00")
 ```
 
 
@@ -230,7 +232,7 @@ act_and_exp_merge <- inner_join(x = hh_data_act, y = hh_exp_df, by="Supervisor")
 
 Column
 -----------------------------------------------------------------------
-### HOUSEHOLD (EXPECTED vs ACTUAL) {data-width=500}
+### EXPECTED vs ACTUAL BY SUPERVISOR {data-width=500}
 
 ```{r}
 
@@ -424,7 +426,7 @@ valueBox(Artuma, icon = "fa-bar-chart")
 ```{r}
 #updated_time <- Sys.Date()
 total_woreda <- Artuma + Dewa + Ebinat + Libo
-valueBox(total_woreda,icon = "fa-clock", color = "#006E7F")
+valueBox(total_woreda,icon = "fa-clock", color = "#FFBF00")
 ```
 
 Column
