@@ -30,7 +30,7 @@ library(scales)
 
 woreda_data<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_1/PSNP_WOREDA_FINAL_1.dta")
 woreda_data <- as_factor(woreda_data) 
-woreda_data <- droplevels(woreda_data)
+woreda_data <- droplevels(woreda_data) %>%  mutate(region = str_replace(region,"South West Ethiopia", "SW Ethiopia"))
 #Id
 woreda_id <-woreda_data %>% select(interview__key,region, woreda)
 
@@ -40,6 +40,7 @@ woreda_id <-woreda_data %>% select(interview__key,region, woreda)
 kebele_data<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_KEBELE_FINAL/PSNP_5_KEBELE_FINAL.dta")
 kebele_data <- as_factor(kebele_data) 
 kebele_data <- droplevels(kebele_data)
+kebele_data <- droplevels(kebele_data) %>%  mutate(region = str_replace(region,"South West Ethiopia", "SW Ethiopia"))
 #Id
 kebele_id <-kebele_data %>% select(interview__key,region, woreda)
 
@@ -48,6 +49,7 @@ kebele_id <-kebele_data %>% select(interview__key,region, woreda)
 hh_data<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_HOUSEHOLD_FINAL/PSNP_5_HOUSEHOLD_FINAL.dta")
 hh_data <- as_factor(hh_data) 
 hh_data <- droplevels(hh_data)
+hh_data <- droplevels(hh_data) %>%  mutate(region = str_replace(region,"South West Ethiopia", "SW Ethiopia"))
 
 ```
 
@@ -181,8 +183,8 @@ Meetings<-woreda_data %>%
           colors="Set1",
           #showlegend = F,
           text=~P1_B2,
-          textposition="outo",
-          hovertext = ~paste("Woreda=", woreda, "<br>", "Meetings=", P1_B2, "<br>"), 
+          textposition="auto",
+          hovertext = ~paste("Region=", region,"<br>", "Woreda=", woreda, "<br>", "Meetings=", P1_B2, "<br>"), 
           hoverinfo = "text") %>% 
   add_bars() %>% 
   layout(title="",
@@ -190,7 +192,7 @@ Meetings<-woreda_data %>%
          yaxis = list(title = "n"),
          bargap = 0.2,
          bargroupgap = 0.1,
-         barmode="group") 
+         barmode="stack") 
 
 Meetings <- plotly::config(Meetings, displayModeBar = FALSE)
       
@@ -335,7 +337,7 @@ p6
 ### Appeal cases has the WFSD received in 2015 EFY {data-width=400}
 ```{r}
 
-appeal<-woreda_data %>% select(region,P1_F5) %>%
+appeal<-woreda_data %>% select(region,P1_F5) %>%drop_na() %>% 
   group_by(region) %>% summarise(n_answer=sum(P1_F5))
   
 colors=c('#F99417','#5D3891','#89375F','#CE5959')
@@ -370,7 +372,7 @@ CFs <-kebele_data %>% filter(k_institution__6==1 ) %>% nrow()
 
 ```{r}
 
-valueBox(WFSD)
+valueBox(KFSTF)
 ```
 
 ### CFSTF
