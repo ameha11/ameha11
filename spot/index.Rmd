@@ -858,7 +858,7 @@ colors=c('#7149C6','#FC2947','#89375F','#CE5959')
       
 p_receive_transfer <- plot_ly(receive_transfer, labels = ~S5_Q34, values = ~count, type = 'pie', marker = list(colors = colors,
                       line = list(color = '#FFFFFF', width = 1)))
-p_receive_transfer <- p_receive_transfer %>% layout(title = '',
+p_receive_transfer <- p_receive_transfer %>% layout(title = '',showlegend = FALSE,
          xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
          yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
 
