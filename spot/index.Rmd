@@ -682,9 +682,6 @@ fig1
 ### Information received about targeting criteria 
 ```{r}
 
-hh_data<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_HOUSEHOLD_FINAL/PSNP_5_HOUSEHOLD_FINAL.dta")
-hh_data <- as_factor(hh_data) 
-hh_data <- droplevels(hh_data)
 
 targeting<- hh_data %>% 
   
