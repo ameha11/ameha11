@@ -590,7 +590,7 @@ p_proj <- p_proj %>% add_trace(x = ~region, y = ~impl, type = 'bar',  name = 'Im
 p_proj <- p_proj %>% add_trace(x = ~region, y = ~plan, type = 'bar', name = 'Planned', marker = list(color = '#5D3891'))
 p_proj <- p_proj %>% layout(xaxis = list(title = ''), barmode = 'group')          
 p_proj <- p_proj %>% layout(yaxis = list(title = 'n'), barmode = 'group')
-p_proj <- p_proj %>% layout(legend = list(x = 0, y = 1, orientation = ''))
+p_proj <- p_proj %>% layout(legend = list(x = 0, y = 1, orientation = 'h'))
 
 p_proj
 ```
@@ -719,6 +719,7 @@ targeting
 ### Satisfaction in re-targeting 
 
 ```{r }
+colors3=c('#009FBD','#FF6000', '#FFD93D', '#7AA874')
  re_targeting<-hh_data %>%  
   mutate(S4_Q13 = str_replace(S4_Q13,"Neither satisfied/Nor dissatisfied", "Neither")) %>% 
   group_by(region, S4_Q13) %>%
@@ -734,7 +735,7 @@ targeting
           text=~percent_answers_label,
           #textposition="outside",
           color=~S4_Q13,
-          colors="Set1",
+          colors=colors3,
           hovertext = ~paste("re-targeting=", S4_Q13, "<br>", "Percent=", percent_answers_label, "<br>", "n=",n_answers), 
           hoverinfo = "text") %>% 
            
@@ -784,21 +785,22 @@ p_land
 
 ### Lump sum transfers(%)
 ```{r }
-Lump_sum<-hh_data %>% 
-  group_by(region, woreda, S5_Q44) %>%
+colors3=c('#009FBD','#FF6000')
+Lump_sum<-hh_data %>% select(region, S5_Q44) %>% drop_na() %>% 
+  group_by(region, S5_Q44) %>%
   count(name="n_answers") %>%
   group_by(region) %>% 
   mutate(percent_answers = (n_answers / sum(n_answers))) %>% 
   #mutate(across(where(is.numeric), round, 0)) %>% 
   mutate(percent_answers_label = percent(percent_answers, accuracy = 1)) %>%
-  filter(S5_Q44=="Yes") %>% 
+ 
   
    plot_ly(x=~region, 
-          y=~percent_answers, 
+          y=~n_answers, 
           text=~percent_answers_label,
           textposition="outside",
-          color=~region,
-          colors="Set1",
+          color=~S5_Q44,
+          colors=colors3,
           hovertext = ~paste("Region=", region, "<br>", "Percent=", percent_answers_label, "<br>", "n=",n_answers), 
           hoverinfo = "text") %>% 
            
@@ -806,7 +808,7 @@ Lump_sum<-hh_data %>%
   layout(title="",
          xaxis = list(title="Region"),
          yaxis = list(title = "%"),
-         barmode="stack")
+         barmode="group")
 Lump_sum <- plotly::config(Lump_sum, displayModeBar = FALSE)
 Lump_sum
 ```
@@ -815,22 +817,22 @@ Lump_sum
 ### Beneficiary of PSNP Livelihood Support(%)
 
 ```{r }
-
+colors2=c('#009FBD','#FF6000')
 lh_suport<-hh_data %>% 
-  group_by(region, woreda, S8_Q1) %>%
+  group_by(region, S8_Q1) %>%
   count(name="n_answers") %>%
   group_by(region) %>% 
   mutate(percent_answers = (n_answers / sum(n_answers))) %>% 
   mutate(percent_answers_label = percent(percent_answers, accuracy = 1)) %>%
   #mutate(across(where(is.numeric), round, 0)) %>% 
-  filter(S8_Q1=="Yes") %>% 
+  #filter(S8_Q1=="Yes") %>% 
   
    plot_ly(x=~region, 
-          y=~percent_answers, 
+          y=~n_answers, 
           text=~percent_answers_label,
           textposition="outside",
-          color=~region,
-          colors="Set1",
+          color=~S8_Q1,
+          colors=colors2,
           hovertext = ~paste("Region=", region, "<br>", "Percent=", percent_answers_label, "<br>", "n=",n_answers), 
           hoverinfo = "text") %>% 
           layout(text = list(ticksuffix = "%")) %>% 
