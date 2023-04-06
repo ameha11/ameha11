@@ -149,7 +149,7 @@ valueBox(WGHO)
 column 
 -------------------------------------
 
-### Woreda Offices {data-width=300}
+### **Woreda Offices** {data-width=300}
 
 ```{r}
 
@@ -172,7 +172,7 @@ fig1 <- fig1 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
 fig1
 ```
 
-### Meetings in last quarter {data-width=300}
+### **Meetings in last quarter** {data-width=300}
 ```{r}
 
 
@@ -181,7 +181,7 @@ Meetings<-woreda_data %>%
           y=~P1_B2, 
           color=~woreda,
           colors="Set1",
-          #showlegend = F,
+          showlegend = F,
           text=~P1_B2,
           textposition="auto",
           hovertext = ~paste("Region=", region,"<br>", "Woreda=", woreda, "<br>", "Meetings=", P1_B2, "<br>"), 
@@ -201,7 +201,7 @@ Meetings
 
  
 
-### Available Documents {data-width=400}  
+### **Available Documents** {data-width=400}  
 ```{r }
 
 doc_p1<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_1/documents_1.dta")
@@ -244,9 +244,9 @@ column
 -------------------------------------
 
 
-### Record keeping {data-width=400}
+### **Record keeping** {data-width=400}
 ```{r}
-
+colors4=c('#1F8A70','#30E3DF','#497174')
 record_k1<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_1/Record_Keeping_1.dta")
 record_k1 <- as_factor(record_k1) 
 record_k1 <- droplevels(record_k1)
@@ -258,7 +258,7 @@ p1_record <- record_k1 %>%
   select(region, Record_Keeping_1__id, region, woreda, P1_B21, P1_B21_1) %>% 
   mutate(Record_Keeping_1__id = str_replace(Record_Keeping_1__id,"PDS monthly payroll", "PDS payroll"), Record_Keeping_1__id = str_replace(Record_Keeping_1__id,"PW attendance sheet", "PW attendance")) %>% 
   drop_na() %>% 
-  group_by(region, Record_Keeping_1__id,P1_B21_1) %>%
+  group_by(region, Record_Keeping_1__id) %>%
   count(name="n_answers") %>% 
   group_by(Record_Keeping_1__id) %>% 
   mutate(percent_answers = n_answers / sum(n_answers)) %>% 
@@ -269,7 +269,7 @@ p5<-p1_record %>%
   plot_ly(x=~Record_Keeping_1__id, 
           y=~n_answers, 
           color=~region,
-          colors="Set1",
+          colors=colors4,
           text=~n_answers,
           #showlegend = F,
           #textposition="outside",
@@ -280,7 +280,7 @@ p5<-p1_record %>%
   layout(title="",
          xaxis = list(title="", categoryorder = "total descending", showgrid = F),
          yaxis = list(title = "n", showgrid = F),
-         barmode="stack")
+         barmode="group")
 
 
 p5 <- plotly::config(p5, displayModeBar = FALSE)
@@ -289,7 +289,7 @@ p5
 ```
 
 
-### Recork keeping Type {data-width=400}
+### **Recork keeping Type** {data-width=400}
 ```{r}
 record_k2<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_1/Record_Keeping_1.dta")
 record_k2 <- as_factor(record_k2) 
@@ -334,7 +334,7 @@ p6
 ```
 
 
-### Appeal cases has the WFSD received in 2015 EFY {data-width=400}
+### **Appeal cases has the WFSD received in 2015 EFY** {data-width=400}
 ```{r}
 
 appeal<-woreda_data %>% select(region,P1_F5) %>%drop_na() %>% 
@@ -415,7 +415,7 @@ valueBox(CFs)
 column 
 -------------------------------------
 
-### Kebele KIIs {data-width=300}
+### **Kebele KIIs** {data-width=300}
 
 
 ```{r}
@@ -439,7 +439,7 @@ P_keb_tool <- P_keb_tool %>% layout(yaxis = list(title = 'n'), barmode = 'group'
 P_keb_tool 
 ```
 
-### Document Availablity {data-width=400}
+### **Document Availablity** {data-width=400}
 
 ```{r }
 k_doc1<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_KEBELE_FINAL/PSNP_available_doc.dta")
@@ -474,7 +474,7 @@ p_doc_aval <- plotly::config(p_doc_aval, displayModeBar = FALSE)
 
 p_doc_aval
 ```
-### Re-targeted Condacted {data-width=300}
+### **Re-targeted Condacted** {data-width=300}
 ```{r}
 
 K_retargeting <- kebele_data %>%
@@ -515,7 +515,7 @@ p_k_retargeting
 column 
 -------------------------------------
 
-### Days each person work on public works per week {data-width=300}
+### **Days each person work on public works per week** {data-width=300}
 ```{r }
 pw_day_per_week<-kebele_data %>% 
   group_by(region, interview__key) %>% 
@@ -545,7 +545,7 @@ p_day_per_week <- plotly::config(p_day_per_week, displayModeBar = FALSE)
 p_day_per_week
 ```
 
-### Hours each person work on public works per week(HR) {data-width=300}
+### **Hours each person work on public works per week(HR)** {data-width=300}
 ```{r }
 pw_hr_per_week<-kebele_data %>% 
   group_by(region, interview__key) %>% 
@@ -575,7 +575,7 @@ p_hr_per_week <- plotly::config(p_hr_per_week, displayModeBar = FALSE)
 p_hr_per_week
 ```
 
-### Project Implementation {data-width=400}
+### **Project Implementation** {data-width=400}
 ```{r}
 projects<-kebele_data %>% select(region, woreda, Tot_Planned_Subprojs_III,Tot_Impl_Subprojs_III) %>% 
   group_by(region, woreda) %>% 
@@ -651,7 +651,7 @@ valueBox(SR, icon = "fa-bar-chart")
 column 
 -------------------------------------
 
-### Household Category
+### **Household Category**
 
 
 ```{r}
@@ -679,7 +679,7 @@ fig1
 
 
 
-### Information received about targeting criteria 
+### **Information received about targeting criteria** 
 ```{r}
 
 
@@ -713,7 +713,7 @@ targeting <- plotly::config(targeting, displayModeBar = FALSE)
 targeting
 ```
 
-### Satisfaction in re-targeting 
+### **Satisfaction in re-targeting**
 
 ```{r }
 colors3=c('#009FBD','#FF6000', '#FFD93D', '#7AA874')
@@ -748,7 +748,7 @@ re_targeting
 
 column 
 -------------------------------------
-### Averge household land size per Region 
+### **Averge household land size per Region** 
 
 
 ```{r }
@@ -780,7 +780,7 @@ p_land <- plotly::config(p_land, displayModeBar = FALSE)
 p_land
 ```
 
-### Lump sum transfers(%)
+### **Lump sum transfers(%)**
 ```{r }
 colors3=c('#009FBD','#FF6000')
 Lump_sum<-hh_data %>% select(region, S5_Q44) %>% drop_na() %>% 
@@ -811,7 +811,7 @@ Lump_sum
 ```
 
 
-### Beneficiary of PSNP Livelihood Support(%)
+### **Beneficiary of PSNP Livelihood Support(%)**
 
 ```{r }
 colors2=c('#009FBD','#FF6000')
@@ -845,7 +845,7 @@ lh_suport
 column 
 -------------------------------------
 
-### How did you receive your last transfer
+### **How did you receive your last transfer**
 ```{r}
 
 receive_transfer<- hh_data %>% select(S5_Q34) %>% group_by(S5_Q34) %>% mutate(S5_Q34 = str_replace(S5_Q34,"Cash transfer made using the traditional approach of WOFED cashiers", "WOFED cashiers"), S5_Q34 = str_replace(S5_Q34,"Cash transfer made electronically (e-payment)", "e-payment"))  %>%
@@ -866,7 +866,7 @@ p_receive_transfer
 
 ```
 
-### Current mode of transfer
+### **Current mode of transfer**
 ```{r}
 current_transfer <-hh_data %>% select(S5_Q18) %>% group_by(S5_Q18) %>% 
   summarise(count = n()) %>% drop_na() %>% 
@@ -877,7 +877,7 @@ current_transfer
 
 ```
 
-### Choice of transfer modality
+### **Choice of transfer modality**
 ```{r}
 choice_modality <-hh_data %>% select(S5_Q42) %>% group_by(S5_Q42) %>% 
   summarise(count = n()) %>% drop_na() %>% 
