@@ -740,7 +740,7 @@ colors3=c('#009FBD','#FF6000', '#FFD93D', '#7AA874')
   layout(title="",
          xaxis = list(title="Region"),
          yaxis = list(title = "%"),
-         barmode="stack")
+         barmode="group")
 re_targeting <- plotly::config(re_targeting, displayModeBar = FALSE)
 re_targeting
 ```
