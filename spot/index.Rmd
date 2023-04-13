@@ -299,9 +299,9 @@ options(digits=1)
 record_k2 <- inner_join(x = record_k2, y = woreda_id, by="interview__key")
 
 p2_record <- record_k2 %>%
-  select(region, Record_Keeping_1__id, region, woreda, P1_B21, P1_B21_1) %>% 
+  select(region, Record_Keeping_1__id, P1_B21, P1_B21_1) %>% drop_na() %>% 
   mutate(Record_Keeping_1__id = str_replace(Record_Keeping_1__id,"PDS monthly payroll", "PDS payroll"), Record_Keeping_1__id = str_replace(Record_Keeping_1__id,"PW attendance sheet", "PW attendance")) %>% 
-  drop_na() %>% 
+  #drop_na() %>% 
   group_by(region,P1_B21_1) %>%
   count(name="n_answers2") %>% 
   group_by(region) %>% 
@@ -748,7 +748,7 @@ re_targeting
 
 column 
 -------------------------------------
-### **Averge household land size per Region** 
+### **Average household land size per Region** 
 
 
 ```{r }
