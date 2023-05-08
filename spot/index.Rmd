@@ -28,28 +28,29 @@ library(scales)
 ```{r }
 #Woreda data
 
-woreda_data<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_1/PSNP_WOREDA_FINAL_1.dta")
+woreda_data<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_OR/PSNP_WOREDA_FINAL_OR.dta")
 woreda_data <- as_factor(woreda_data) 
-woreda_data <- droplevels(woreda_data) %>%  mutate(region = str_replace(region,"South West Ethiopia", "SW Ethiopia"))
+woreda_data <- droplevels(woreda_data)
+#woreda_data <- droplevels(woreda_data) %>%  mutate(region = str_replace(region,"South West Ethiopia", "SW Ethiopia"))
 #Id
 woreda_id <-woreda_data %>% select(interview__key,region, woreda)
 
 
 
 #Kebele data
-kebele_data<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_KEBELE_FINAL/PSNP_5_KEBELE_FINAL.dta")
+kebele_data<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_KEBELE_FINAL_OR/PSNP_5_KEBELE_FINAL_OR.dta")
 kebele_data <- as_factor(kebele_data) 
 kebele_data <- droplevels(kebele_data)
-kebele_data <- droplevels(kebele_data) %>%  mutate(region = str_replace(region,"South West Ethiopia", "SW Ethiopia"))
+#kebele_data <- droplevels(kebele_data) %>%  mutate(region = str_replace(region,"South West Ethiopia", "SW Ethiopia"))
 #Id
 kebele_id <-kebele_data %>% select(interview__key,region, woreda)
 
 
 #Household data
-hh_data<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_HOUSEHOLD_FINAL/PSNP_5_HOUSEHOLD_FINAL.dta")
+hh_data<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_HOUSEHOLD_FINAL_OR/PSNP_5_HOUSEHOLD_FINAL_OR.dta")
 hh_data <- as_factor(hh_data) 
 hh_data <- droplevels(hh_data)
-hh_data <- droplevels(hh_data) %>%  mutate(region = str_replace(region,"South West Ethiopia", "SW Ethiopia"))
+#hh_data <- droplevels(hh_data) %>%  mutate(region = str_replace(region,"South West Ethiopia", "SW Ethiopia"))
 
 ```
 
@@ -153,15 +154,17 @@ column
 
 ```{r}
 
-doc_p1<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_1/documents_1.dta")
+doc_p1<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_OR/documents_1.dta")
 doc_p1 <- as_factor(doc_p1) 
 doc_p1 <- droplevels(doc_p1)
 
 doc_p1 <- inner_join(x = doc_p1, y = woreda_id, by="interview__key")
 
 p1_doc <- doc_p1 %>% select(interview__key, documents_1__id, region, woreda, P1_C1) %>% drop_na() %>% 
-  # mutate(documents_1__id = str_replace(documents_1__id,"PSNP GSD and Nutrition mainstreaming facilitators manual", "PSNP GSD & Nutr."), documents_1__id = str_replace(documents_1__id,"PSNP Financial Management Manual", "PSNP Fin. mgt"), documents_1__id = str_replace(documents_1__id, "BCC facilitation guide/manua", "BCC fac"), documents_1__id = str_replace(documents_1__id, "Livelihood transfer guidance note", "Livelihood trans."), documents_1__id = str_replace(documents_1__id, "Voluntary loss of asset format", "Voluntary"), documents_1__id = str_replace(documents_1__id, "Specifications and work norms", "Sp.&work norm"), documents_1__id = str_replace(documents_1__id, "ESMF Screening format", "ESMF Screening"), documents_1__id = str_replace(documents_1__id, "Contingency Planning Guidelines", "Contingency Plan"),documents_1__id = str_replace(documents_1__id, "ESMF Operational Summary", "ESMF Operational"), documents_1__id = str_replace(documents_1__id, "ESMF Operational Summary", "ESMF Operational")) %>% 
+   mutate(documents_1__id = str_replace(documents_1__id,"PSNP GSD and Nutrition mainstreaming facilitators manual", "PSNP GSD & Nutr."), documents_1__id = str_replace(documents_1__id,"PSNP Financial Management Manual", "PSNP Fin. mgt"), documents_1__id = str_replace(documents_1__id, "BCC facilitation guide/manua", "BCC fac"), documents_1__id = str_replace(documents_1__id, "Livelihood transfer guidance note", "Livelihood trans."), documents_1__id = str_replace(documents_1__id, "Voluntary loss of asset format", "Voluntary"), documents_1__id = str_replace(documents_1__id, "Specifications and work norms", "Sp.&work norm"), documents_1__id = str_replace(documents_1__id, "ESMF Screening format", "ESMF Screening"), documents_1__id = str_replace(documents_1__id, "Contingency Planning Guidelines", "Contingency Plan"),documents_1__id = str_replace(documents_1__id, "ESMF Operational Summary", "ESMF Operational"), documents_1__id = str_replace(documents_1__id, "ESMF Operational Summary", "ESMF Operational")) %>% 
   filter(P1_C1=="Yes") %>% group_by(documents_1__id) %>% summarise(count=n())
+
+
   
   
 d1<-p1_doc %>% 
@@ -185,28 +188,26 @@ d1 <- plotly::config(d1, displayModeBar = FALSE)
 
 d1
 
-
 ```
 
 ### **Re-targeting Conducted** {data-width=350}
 ```{r}
 
+colors42=c('#FFD93D', '#7AA874')
 
 w_retargeting <- woreda_data %>%
-  select(region, woreda, P1_D15) %>% 
+  select(region, P1_D15) %>% 
   drop_na() %>% 
   group_by(region,P1_D15) %>%
   count(name="n_answers") %>% 
   group_by(region) %>% 
   mutate(percent_answers = n_answers / sum(n_answers)) %>% 
   mutate(percent_answers_label = percent(percent_answers, accuracy = 1)) 
-  
-colors42=c('#FF6000', '#009FBD')
 
 p_w_retargeting<-w_retargeting %>% 
   plot_ly(x=~region, 
           y=~n_answers, 
-          color=~region,
+          color=~P1_D15,
           colors=colors42,
           text=~percent_answers_label,
           #showlegend = F,
@@ -228,35 +229,35 @@ p_w_retargeting
 
  
 
-### **Avg no. of Technical Staff** {data-width=300}  
+### **Avg no. of Technical Staff by woreda** {data-width=300}  
 ```{r }
 colors6=c('#009FBD', '#FFD93D', '#FF6000')
-avg_tech_staff<-woreda_data %>% 
-  group_by(region, interview__key) %>% 
-  summarise(Average_staff = mean(P1_B20))%>% 
+No_tech_staff<-woreda_data %>% 
+  group_by(woreda) %>% 
+  summarise(No_of_staff = sum(P1_B20))%>% 
   drop_na() 
 
-avg_tech_staff_reg<-avg_tech_staff %>% 
-  group_by(region) %>%
-  summarise(avg_tech_staff = mean(Average_staff)) %>% 
-  mutate(across(where(is.numeric), round, 0))
+# avg_tech_staff_reg<-avg_tech_staff %>% 
+#   group_by(woreda) %>%
+#   summarise(avg_tech_staff = count(Average_staff)) %>% 
+#   mutate(across(where(is.numeric), round, 0))
 
-p_avg_tech_staff <-avg_tech_staff_reg %>% 
-  plot_ly(x=~region, 
-          y=~avg_tech_staff, 
-          color=~region,
+p_no_tech_staff <-No_tech_staff %>% 
+  plot_ly(x=~woreda, 
+          y=~No_of_staff, 
+          color=~woreda,
           colors=colors6,
-          text=~avg_tech_staff,
+          text=~No_of_staff,
           textposition="outside",
-          hovertext = ~paste("Region=", region, "<br>", "Avg. PW hour=", avg_tech_staff, "<br>"), 
+          hovertext = ~paste("Woreda=", woreda, "<br>", "No. technical staff=", No_of_staff, "<br>"), 
           hoverinfo = "text") %>% 
   add_bars() %>% 
   layout(title="",
          xaxis = list(title=""),
-         yaxis = list(title = "no"),
+         yaxis = list(title = "n"),
          barmode="group")
-p_avg_tech_staff <- plotly::config(p_avg_tech_staff, displayModeBar = FALSE)
-p_avg_tech_staff
+p_no_tech_staff <- plotly::config(p_no_tech_staff, displayModeBar = FALSE)
+p_no_tech_staff
 ```
 
 
@@ -267,8 +268,8 @@ column
 
 ### **Document Maintained** {data-width=400}
 ```{r}
-colors4=c('#1F8A70','#30E3DF','#497174', '#009FBD','#FF6000', '#FFD93D', '#7AA874')
-record_k1<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_1/Record_Keeping_1.dta")
+colors4=c('#1F8A70','#30E3DF','#497174','#FF6000', '#FFD93D', '#7AA874', '#009FBD')
+record_k1<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_OR/Record_Keeping_1.dta")
 record_k1 <- as_factor(record_k1) 
 record_k1 <- droplevels(record_k1)
 options(digits=1) 
@@ -279,7 +280,7 @@ p1_record <- record_k1 %>%
   select(region, Record_Keeping_1__id, woreda, P1_B21, P1_B21_1) %>% 
   mutate(Record_Keeping_1__id = str_replace(Record_Keeping_1__id,"PDS monthly payroll", "PDS payroll"), Record_Keeping_1__id = str_replace(Record_Keeping_1__id,"PW attendance sheet", "PW attendance")) %>% 
   filter(P1_B21=="Yes saw the document") %>% 
-  group_by(region, Record_Keeping_1__id) %>%
+  group_by(woreda, Record_Keeping_1__id) %>%
   count(name="n_answers") %>% 
   #group_by(region) %>% 
   mutate(percent_answers = n_answers / sum(n_answers)) %>% 
@@ -287,7 +288,7 @@ p1_record <- record_k1 %>%
   
 
 p5<-p1_record %>% 
-  plot_ly(x=~region, 
+  plot_ly(x=~woreda, 
           y=~n_answers, 
           color=~Record_Keeping_1__id,
           colors=colors4,
@@ -310,10 +311,10 @@ p5
 ```
 
 
-### **Forms Record Maintained** {data-width=400}
+### **Forms Record Maintained by** {data-width=400}
 ```{r}
-colors55=c('#30E3DF', '#FFD93D','#FF6000', '#009FBD')
-record_k2<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_1/Record_Keeping_1.dta")
+colors55=c('#FFD93D','#FF6000', '#009FBD', '#30E3DF')
+record_k2<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_OR/Record_Keeping_1.dta")
 record_k2 <- as_factor(record_k2) 
 record_k2 <- droplevels(record_k2)
 options(digits=1) 
@@ -321,19 +322,19 @@ options(digits=1)
 record_k2 <- inner_join(x = record_k2, y = woreda_id, by="interview__key")
 
 p2_record <- record_k2 %>%
-  select(region, Record_Keeping_1__id, P1_B21, P1_B21_1) %>% drop_na() %>% 
+  select(woreda, Record_Keeping_1__id, P1_B21, P1_B21_1) %>% drop_na() %>% 
   mutate(Record_Keeping_1__id = str_replace(Record_Keeping_1__id,"PDS monthly payroll", "PDS payroll"), Record_Keeping_1__id = str_replace(Record_Keeping_1__id,"PW attendance sheet", "PW attendance")) %>% 
   #drop_na() %>% 
-  group_by(region,P1_B21_1) %>%
+  group_by(woreda,P1_B21_1) %>%
   count(name="n_answers2") %>% 
-  group_by(region) %>% 
+  group_by(woreda) %>% 
   mutate(percent_answers2 = n_answers2 / sum(n_answers2)) %>% 
   mutate(percent_answers_label2 = percent(percent_answers2, accuracy = 1)) 
   
 
 
 p6<-p2_record %>% 
-  plot_ly(x=~region, 
+  plot_ly(x=~woreda, 
           y=~n_answers2, 
           color=~P1_B21_1,
           colors=colors55,
@@ -359,11 +360,12 @@ p6
 ### **Appeal cases has the WFSD received in 2015 EFY** {data-width=400}
 ```{r}
 
-appeal<-woreda_data %>% select(region,P1_F5) %>%drop_na() %>% 
-  group_by(region) %>% summarise(n_answer=sum(P1_F5))
+appeal<-woreda_data %>% select(woreda,P1_F5) %>%drop_na() %>% 
+  group_by(woreda) %>% summarise(n_answer=sum(P1_F5))
   
 colors=c('#F99417','#5D3891','#89375F','#CE5959')
-p_appeal <- plot_ly(appeal, labels = ~region, values = ~n_answer, type = 'pie', marker = list(colors = colors,
+
+p_appeal <- plot_ly(appeal, labels = ~woreda, values = ~n_answer, type = 'pie', marker = list(colors = colors,
                       line = list(color = '#FFFFFF', width = 1)))
 p_appeal <- p_appeal %>% layout(title = '',
          xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
@@ -387,8 +389,11 @@ KAC<-kebele_data %>% filter(k_institution__4==1 ) %>% nrow()
 PW_pc<-kebele_data %>% filter(k_institution__5==1 ) %>% nrow()
 CFs <-kebele_data %>% filter(k_institution__6==1 ) %>% nrow()
 
-
+TOTAL <- kebele_data%>% nrow()
 ```
+
+
+
 
 ### KFSTF
 
@@ -434,6 +439,13 @@ valueBox(PW_pc)
 valueBox(CFs)
 ```
 
+### TOTAL
+
+```{r}
+
+valueBox(TOTAL,icon = "fa-clock", color = "#FF6000")
+```
+
 column 
 -------------------------------------
 
@@ -464,7 +476,7 @@ column
 ### **Document Availability** {data-width=300}
 
 ```{r }
-k_doc1<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_KEBELE_FINAL/PSNP_available_doc.dta")
+k_doc1<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_KEBELE_FINAL_OR/PSNP_available_doc.dta")
 k_doc1 <- as_factor(k_doc1) 
 k_doc1 <- droplevels(k_doc1)
 
@@ -497,49 +509,28 @@ p_doc_aval <- plotly::config(p_doc_aval, displayModeBar = FALSE)
 p_doc_aval
 ```
 
-### **Re-targeting Conducted** {data-width=300}
+### **Appeal cases has the KAC received in 2015 EFY** {data-width=300}
 ```{r}
-colors42=c('#FF6000', '#009FBD')
-K_retargeting <- kebele_data %>%
-  select(region, woreda, C_Q10) %>% 
-  mutate(C_Q10 = str_replace(C_Q10,"Yes, saw documentary evidence", "Yes")) %>% 
-  drop_na() %>% 
-  group_by(region,C_Q10) %>%
-  count(name="n_answers") %>% 
-  group_by(region) %>% 
-  mutate(percent_answers = n_answers / sum(n_answers)) %>% 
-  mutate(percent_answers_label = percent(percent_answers, accuracy = 1)) 
+appeal_kac<- kebele_data %>% select(woreda,D4_Q2) %>%drop_na() %>% 
+  group_by(woreda) %>% summarise(n_answer=sum(D4_Q2))
   
+colors=c('#F99417','#5D3891','#89375F','#CE5959')
 
+p_appeal_kac <- plot_ly(appeal_kac, labels = ~woreda, values = ~n_answer, type = 'pie', marker = list(colors = colors,
+                      line = list(color = '#FFFFFF', width = 1)))
+p_appeal_kac <- p_appeal_kac %>% layout(title = '',
+         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
 
-p_k_retargeting<-K_retargeting %>% 
-  plot_ly(x=~region, 
-          y=~n_answers, 
-          color=~C_Q10,
-          colors=colors42,
-          text=~percent_answers_label,
-          #showlegend = F,
-          textposition="outside",
-          hovertext = ~paste("n=", n_answers, "<br>", "Percent=",percent_answers_label, "<br>"), 
-          hoverinfo = "text") %>% 
+p_appeal_kac 
 
-  add_bars() %>% 
-  layout(title="",
-         xaxis = list(title="", categoryorder = "total descending", showgrid = F),
-         yaxis = list(title = "n", showgrid = F),
-         barmode="group")
-
-
-p_k_retargeting <- plotly::config(p_k_retargeting, displayModeBar = FALSE)
-
-p_k_retargeting
 ```
 
 ### **Document Maintained** {data-width=300}
 ```{r}
 colors52=c('#30E3DF', '#009FBD','#FF6000', '#FFD93D', '#7AA874')
 
-record_k2<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_KEBELE_FINAL/records.dta")
+record_k2<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_KEBELE_FINAL_OR/records.dta")
 record_k2 <- as_factor(record_k2) 
 record_k2 <- droplevels(record_k2)
 options(digits=1) 
@@ -549,7 +540,7 @@ record_k2 <- inner_join(x = record_k2, y = kebele_id, by="interview__key")
 p_record2 <- record_k2 %>%
   select(region, records__id, woreda, B3_Q13) %>% 
   filter(B3_Q13=="Yes saw the document") %>% 
-  group_by(region, records__id) %>%
+  group_by(woreda, records__id) %>%
   count(name="n_answers") %>% 
   #group_by(region) %>% 
   mutate(percent_answers = n_answers / sum(n_answers)) %>% 
@@ -557,7 +548,7 @@ p_record2 <- record_k2 %>%
   
 
 p52<-p_record2 %>% 
-  plot_ly(x=~region, 
+  plot_ly(x=~woreda, 
           y=~n_answers, 
           color=~records__id,
           colors=colors52,
@@ -586,23 +577,23 @@ column
 ```{r }
 colors7=c('#009FBD','#FF6000', '#FFD93D', '#7AA874')
 pw_day_per_week<-kebele_data %>% 
-  group_by(region, interview__key) %>% 
+  group_by(woreda, interview__key) %>% 
   summarise(Average_day = mean(E1_Q7))%>% 
   drop_na() 
 
 avg_day_per_week_reg<-pw_day_per_week %>% 
-  group_by(region) %>%
+  group_by(woreda) %>%
   summarise(avg_day_per_week = mean(Average_day)) %>% 
   mutate(across(where(is.numeric), round, 2))
 
 p_day_per_week <-avg_day_per_week_reg %>% 
-  plot_ly(x=~region, 
+  plot_ly(x=~woreda, 
           y=~avg_day_per_week, 
-          color=~region,
+          color=~woreda,
           colors=colors7,
           text=~avg_day_per_week,
           textposition="outside",
-          hovertext = ~paste("Region=", region, "<br>", "Avg PW days=", avg_day_per_week, "<br>"), 
+          hovertext = ~paste("Woreda=", woreda, "<br>", "Avg PW days=", avg_day_per_week, "<br>"), 
           hoverinfo = "text") %>% 
   add_bars() %>% 
   layout(title="",
@@ -619,23 +610,23 @@ p_day_per_week
 ```{r }
 colors6=c('#009FBD','#FF6000', '#FFD93D', '#7AA874')
 pw_hr_per_week<-kebele_data %>% 
-  group_by(region, interview__key) %>% 
+  group_by(woreda, interview__key) %>% 
   summarise(Average_hr = mean(E1_Q8))%>% 
   drop_na() 
 
 avg_hr_per_week_reg<-pw_hr_per_week %>% 
-  group_by(region) %>%
+  group_by(woreda) %>%
   summarise(avg_hr_per_week = mean(Average_hr)) %>% 
   mutate(across(where(is.numeric), round, 0))
 
 p_hr_per_week <-avg_hr_per_week_reg %>% 
-  plot_ly(x=~region, 
+  plot_ly(x=~woreda, 
           y=~avg_hr_per_week, 
-          color=~region,
+          color=~woreda,
           colors=colors6,
           text=~avg_hr_per_week,
           textposition="outside",
-          hovertext = ~paste("Region=", region, "<br>", "Avg. PW hour=", avg_hr_per_week, "<br>"), 
+          hovertext = ~paste("Woreda=", woreda, "<br>", "Avg. PW hour=", avg_hr_per_week, "<br>"), 
           hoverinfo = "text") %>% 
   add_bars() %>% 
   layout(title="",
@@ -652,13 +643,13 @@ projects<-kebele_data %>% select(region, woreda, Tot_Planned_Subprojs_III,Tot_Im
   group_by(region, woreda) %>% 
   mutate(Impl_proj=sum(Tot_Impl_Subprojs_III), Plan_proj=sum(Tot_Planned_Subprojs_III))  
 
-proj_reg<-projects %>% select(region,Impl_proj, Plan_proj) %>% 
-  group_by(region) %>% summarise(impl=sum(Impl_proj), plan=sum(Plan_proj))
+proj_reg<-projects %>% select(woreda,Impl_proj, Plan_proj) %>% 
+  group_by(woreda) %>% summarise(impl=sum(Impl_proj), plan=sum(Plan_proj))
 
 
 p_proj <- proj_reg %>% plot_ly()
-p_proj <- p_proj %>% add_trace(x = ~region, y = ~impl, type = 'bar',  name = 'Implmented', marker = list(color = '#FFBF00'))
-p_proj <- p_proj %>% add_trace(x = ~region, y = ~plan, type = 'bar', name = 'Planned', marker = list(color = '#5D3891'))
+p_proj <- p_proj %>% add_trace(x = ~woreda, y = ~impl, type = 'bar',  name = 'Implmented', marker = list(color = '#FF6000'))
+p_proj <- p_proj %>% add_trace(x = ~woreda, y = ~plan, type = 'bar', name = 'Planned', marker = list(color = '#009FBD'))
 p_proj <- p_proj %>% layout(xaxis = list(title = ''), barmode = 'group')          
 p_proj <- p_proj %>% layout(yaxis = list(title = 'n'), barmode = 'group')
 p_proj <- p_proj %>% layout(legend = list(x = 0, y = 1, orientation = 'h'))
@@ -679,7 +670,9 @@ PDS<-hh_data %>% filter(Id_8__2==1) %>% nrow()
 SR <-hh_data %>% filter(Id_8__3==1) %>% nrow()
 LH  <-hh_data %>% filter(Id_8__4==1) %>% nrow()
 TDS<-hh_data %>% filter(Id_8__5==1) %>% nrow()
-#Excluded <-hh_data %>% filter(Id_8__6==1) %>% nrow()
+
+Total_Synced <-hh_data %>% nrow()
+
 ```
 
 
@@ -718,6 +711,14 @@ valueBox(LH, icon = "fa-bar-chart")
 valueBox(SR, icon = "fa-bar-chart")
 ```
 
+### TOTAL
+
+```{r}
+
+valueBox(Total_Synced,icon = "fa-clock", color = "#FF6000")
+```
+
+
 
 column 
 -------------------------------------
@@ -755,22 +756,22 @@ fig1
 colors9=c('#009FBD','#FF6000', '#FFD93D', '#7AA874')
 targeting<- hh_data %>% 
   
-  group_by(region, S4_Q2) %>%
+  group_by(woreda, S4_Q2) %>%
   count(name="n_answers") %>%
-  group_by(region) %>% 
+  group_by(woreda) %>% 
   mutate(percent_answers = n_answers / sum(n_answers)) %>% 
   #mutate(across(where(is.numeric), round, 0)) %>% 
   mutate(percent_answers_label = percent(percent_answers, accuracy = 1)) %>%
   
   #filter(S4_Q2=="Yes") %>% 
   
-   plot_ly(x=~region, 
+   plot_ly(x=~woreda, 
           y=~n_answers, 
           text=~percent_answers_label,
           textposition="outside",
           colors=colors9,
           color=~S4_Q2,
-          hovertext = ~paste("Region=", region, "<br>", "Percent=", percent_answers_label, "<br>", "n=",n_answers), 
+          hovertext = ~paste("Woreda=", woreda, "<br>", "Percent=", percent_answers_label, "<br>", "n=",n_answers), 
           hoverinfo = "text") %>% 
          
   add_bars() %>% 
@@ -789,15 +790,15 @@ targeting
 colors3=c('#009FBD','#FF6000', '#FFD93D', '#7AA874')
  re_targeting<-hh_data %>%  
   mutate(S4_Q13 = str_replace(S4_Q13,"Neither satisfied/Nor dissatisfied", "Neither")) %>% 
-  group_by(region, S4_Q13) %>%
+  group_by(woreda, S4_Q13) %>%
   count(name="n_answers") %>%
   drop_na() %>% 
-  group_by(region) %>% 
+  group_by(woreda) %>% 
   mutate(percent_answers = (n_answers / sum(n_answers))) %>% 
   #mutate(across(where(is.numeric), round, 0)) %>% 
   mutate(percent_answers_label = percent(percent_answers, accuracy = 1)) %>%
   
-  plot_ly(x=~region, 
+  plot_ly(x=~woreda, 
           y=~n_answers, 
           text=~percent_answers_label,
           textposition="outside",
@@ -818,28 +819,28 @@ re_targeting
 
 column 
 -------------------------------------
-### **Average household land size per Region** 
+### **Average household land size per woreda** 
 
 
 ```{r }
 avg_hh_land<-hh_data %>% 
-  group_by(region, interview__key) %>% 
+  group_by(woreda, interview__key) %>% 
   summarise(Average_land_size = mean(Q2))%>% 
   drop_na() 
 
 avg_land_per_hh_reg<-avg_hh_land %>% 
-  group_by(region) %>%
+  group_by(woreda) %>%
   summarise(avg_land_size_hh = mean(Average_land_size)) %>% 
   mutate(across(where(is.numeric), round, 2))
 
 p_land <-avg_land_per_hh_reg %>% 
-  plot_ly(x=~region, 
+  plot_ly(x=~woreda, 
           y=~avg_land_size_hh, 
-          color=~region,
+          color=,
           colors=colors9,
           text=~avg_land_size_hh,
           textposition="outside",
-          hovertext = ~paste("Region=", region, "<br>", "Avg Land Size=", avg_land_size_hh, "<br>"), 
+          hovertext = ~paste("Woreda=", woreda, "<br>", "Avg Land Size=", avg_land_size_hh, "<br>"), 
           hoverinfo = "text") %>% 
   add_bars() %>% 
   layout(title="",
@@ -850,34 +851,39 @@ p_land <- plotly::config(p_land, displayModeBar = FALSE)
 p_land
 ```
 
-### **Lump sum transfers(%)**
+### **Knowelage about apeals to KAC**
+
 ```{r }
-colors3=c('#009FBD','#FF6000')
-Lump_sum<-hh_data %>% select(region, S5_Q44) %>% drop_na() %>% 
-  group_by(region, S5_Q44) %>%
+colors9=c('#009FBD','#FF6000', '#FFD93D', '#7AA874')
+
+Appeal<- hh_data %>% 
+  
+  group_by(woreda, S9_Q2) %>%
   count(name="n_answers") %>%
-  group_by(region) %>% 
-  mutate(percent_answers = (n_answers / sum(n_answers))) %>% 
+  group_by(woreda) %>% 
+  mutate(percent_answers = n_answers / sum(n_answers)) %>% 
   #mutate(across(where(is.numeric), round, 0)) %>% 
   mutate(percent_answers_label = percent(percent_answers, accuracy = 1)) %>%
- 
   
-   plot_ly(x=~region, 
+  #filter(S9_Q2=="Yes") %>% 
+  
+   plot_ly(x=~woreda, 
           y=~n_answers, 
           text=~percent_answers_label,
           textposition="outside",
-          color=~S5_Q44,
-          colors=colors3,
-          hovertext = ~paste("Region=", region, "<br>", "Percent=", percent_answers_label, "<br>", "n=",n_answers), 
+          colors=colors9,
+          color=~S9_Q2,
+          hovertext = ~paste("Woreda=", woreda, "<br>", "Percent=", percent_answers_label, "<br>", "n=",n_answers), 
           hoverinfo = "text") %>% 
-           
+         
   add_bars() %>% 
   layout(title="",
          xaxis = list(title="", categoryorder = "total descending"),
          yaxis = list(title = "n"),
          barmode="group")
-Lump_sum <- plotly::config(Lump_sum, displayModeBar = FALSE)
-Lump_sum
+
+Appeal <- plotly::config(Appeal, displayModeBar = FALSE)
+Appeal
 ```
 
 
@@ -886,21 +892,21 @@ Lump_sum
 ```{r }
 colors10=c('#009FBD','#FF6000')
 lh_suport<-hh_data %>% 
-  group_by(region, S8_Q1) %>%
+  group_by(woreda, S8_Q1) %>%
   count(name="n_answers") %>%
-  group_by(region) %>% 
+  group_by(woreda) %>% 
   mutate(percent_answers = (n_answers / sum(n_answers))) %>% 
   mutate(percent_answers_label = percent(percent_answers, accuracy = 1)) %>%
   #mutate(across(where(is.numeric), round, 0)) %>% 
   #filter(S8_Q1=="Yes") %>% 
   
-   plot_ly(x=~region, 
+   plot_ly(x=~woreda, 
           y=~n_answers, 
           text=~percent_answers_label,
           textposition="outside",
           color=~S8_Q1,
           colors=colors10,
-          hovertext = ~paste("Region=", region, "<br>", "Percent=", percent_answers_label, "<br>", "n=",n_answers), 
+          hovertext = ~paste("Woreda=", woreda, "<br>", "Percent=", percent_answers_label, "<br>", "n=",n_answers), 
           hoverinfo = "text") %>% 
           layout(text = list(ticksuffix = "%")) %>% 
   add_bars() %>% 
@@ -915,14 +921,14 @@ lh_suport
 column 
 -------------------------------------
 
-### **How did you receive your last transfer**
+### **Last transfer received from**
 ```{r}
 
 receive_transfer<- hh_data %>% select(S5_Q34) %>% group_by(S5_Q34) %>% mutate(S5_Q34 = str_replace(S5_Q34,"Cash transfer made using the traditional approach of WOFED cashiers", "WOFED cashiers"), S5_Q34 = str_replace(S5_Q34,"Cash transfer made electronically (e-payment)", "e-payment"))  %>%
   summarise(count = n()) %>% drop_na()
 
 
-colors=c('#7149C6','#FC2947','#89375F','#CE5959')
+colors=c('#7149C6','#89375F','#CE5959')
 
       
 p_receive_transfer <- plot_ly(receive_transfer, labels = ~S5_Q34, values = ~count, type = 'pie', marker = list(colors = colors,
@@ -947,7 +953,7 @@ current_transfer
 
 ```
 
-### **Choice of transfer morality**
+### **Preference of transfer modality**
 ```{r}
 choice_modality <-hh_data %>% select(S5_Q42) %>% group_by(S5_Q42) %>% 
   summarise(count = n()) %>% drop_na() %>% 
