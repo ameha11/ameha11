@@ -861,6 +861,7 @@ Appeal<- hh_data %>%
   group_by(woreda, S9_Q2) %>%
   count(name="n_answers") %>%
   group_by(woreda) %>% 
+  drop_na() %>% 
   mutate(percent_answers = n_answers / sum(n_answers)) %>% 
   #mutate(across(where(is.numeric), round, 0)) %>% 
   mutate(percent_answers_label = percent(percent_answers, accuracy = 1)) %>%
