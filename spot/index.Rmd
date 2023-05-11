@@ -542,7 +542,7 @@ p_record2 <- record_k2 %>%
   filter(B3_Q13=="Yes saw the document") %>% 
   group_by(woreda, records__id) %>%
   count(name="n_answers") %>% 
-  #group_by(region) %>% 
+  group_by(woreda) %>% 
   mutate(percent_answers = n_answers / sum(n_answers)) %>% 
   mutate(percent_answers_label = percent(percent_answers, accuracy = 1)) 
   
@@ -925,7 +925,7 @@ column
 ### **Last transfer received from**
 ```{r}
 
-receive_transfer<- hh_data %>% select(S5_Q34) %>% group_by(S5_Q34) %>% mutate(S5_Q34 = str_replace(S5_Q34,"Cash transfer made using the traditional approach of WOFED cashiers", "WOFED cashiers"), S5_Q34 = str_replace(S5_Q34,"Cash transfer made electronically (e-payment)", "e-payment"))  %>%
+receive_transfer<- hh_data %>% select(S5_Q34) %>% group_by(S5_Q34) %>% mutate(S5_Q34 = str_replace(S5_Q34,"Cash transfer made using the traditional approach of WOFED cashiers", "WOFED cashiers"),S5_Q34 = str_replace(S5_Q34,"Cash transfer made electronically (e-payment)", "e-payment"))  %>%
   summarise(count = n()) %>% drop_na()
 
 
