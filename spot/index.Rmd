@@ -1,5 +1,5 @@
 ---
-title: "PSNP 5 SPOT-CHECK DASHBOARD"
+title: "SPOT-CHECK - C3 DASHBOARD"
 output: 
   flexdashboard::flex_dashboard:
     orientation: row
@@ -28,7 +28,7 @@ library(scales)
 ```{r }
 #Woreda data
 
-woreda_data<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_OR/PSNP_WOREDA_FINAL_OR.dta")
+woreda_data<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_AMH_AFAR/PSNP_WOREDA_FINAL_AMH_AFAR.dta")
 woreda_data <- as_factor(woreda_data) 
 woreda_data <- droplevels(woreda_data)
 #woreda_data <- droplevels(woreda_data) %>%  mutate(region = str_replace(region,"South West Ethiopia", "SW Ethiopia"))
@@ -38,7 +38,7 @@ woreda_id <-woreda_data %>% select(interview__key,region, woreda)
 
 
 #Kebele data
-kebele_data<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_KEBELE_FINAL_OR/PSNP_5_KEBELE_FINAL_OR.dta")
+kebele_data<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_KEBELE_FINAL_AMH_AFAR/PSNP_5_KEBELE_FINAL_AMH_AFAR.dta")
 kebele_data <- as_factor(kebele_data) 
 kebele_data <- droplevels(kebele_data)
 #kebele_data <- droplevels(kebele_data) %>%  mutate(region = str_replace(region,"South West Ethiopia", "SW Ethiopia"))
@@ -47,7 +47,7 @@ kebele_id <-kebele_data %>% select(interview__key,region, woreda)
 
 
 #Household data
-hh_data<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_HOUSEHOLD_FINAL_OR/PSNP_5_HOUSEHOLD_FINAL_OR.dta")
+hh_data<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_HOUSEHOLD_FINAL_AMH_AFAR/PSNP_5_HOUSEHOLD_FINAL_AMH_AFAR.dta")
 hh_data <- as_factor(hh_data) 
 hh_data <- droplevels(hh_data)
 #hh_data <- droplevels(hh_data) %>%  mutate(region = str_replace(region,"South West Ethiopia", "SW Ethiopia"))
@@ -154,7 +154,7 @@ column
 
 ```{r}
 
-doc_p1<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_OR/documents_1.dta")
+doc_p1<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_AMH_AFAR/documents_1.dta")
 doc_p1 <- as_factor(doc_p1) 
 doc_p1 <- droplevels(doc_p1)
 
@@ -269,7 +269,7 @@ column
 ### **Document Maintained** {data-width=400}
 ```{r}
 colors4=c('#1F8A70','#30E3DF','#497174','#FF6000', '#FFD93D', '#7AA874', '#009FBD')
-record_k1<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_OR/Record_Keeping_1.dta")
+record_k1<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_AMH_AFAR/Record_Keeping_1.dta")
 record_k1 <- as_factor(record_k1) 
 record_k1 <- droplevels(record_k1)
 options(digits=1) 
@@ -314,7 +314,7 @@ p5
 ### **Forms Record Maintained by** {data-width=400}
 ```{r}
 colors55=c('#FFD93D','#FF6000', '#009FBD', '#30E3DF')
-record_k2<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_OR/Record_Keeping_1.dta")
+record_k2<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_WOREDA_FINAL_AMH_AFAR/Record_Keeping_1.dta")
 record_k2 <- as_factor(record_k2) 
 record_k2 <- droplevels(record_k2)
 options(digits=1) 
@@ -476,7 +476,7 @@ column
 ### **Document Availability** {data-width=300}
 
 ```{r }
-k_doc1<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_KEBELE_FINAL_OR/PSNP_available_doc.dta")
+k_doc1<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_KEBELE_FINAL_AMH_AFAR/PSNP_available_doc.dta")
 k_doc1 <- as_factor(k_doc1) 
 k_doc1 <- droplevels(k_doc1)
 
@@ -530,7 +530,7 @@ p_appeal_kac
 ```{r}
 colors52=c('#30E3DF', '#009FBD','#FF6000', '#FFD93D', '#7AA874')
 
-record_k2<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_KEBELE_FINAL_OR/records.dta")
+record_k2<-read_dta("C:/Survey Spotcheck II/Data/Raw_data/PSNP_5_KEBELE_FINAL_AMH_AFAR/records.dta")
 record_k2 <- as_factor(record_k2) 
 record_k2 <- droplevels(record_k2)
 options(digits=1) 
