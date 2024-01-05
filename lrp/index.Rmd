@@ -1,0 +1,228 @@
+---
+title: "LRP Household Listing Duplicates"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: row
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(haven)
+library(plyr)
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(highcharter)
+library(plotly)
+library(DT)
+library(stringr)
+library(ggplot2)
+library(viridis)
+library(hrbrthemes)
+```
+
+```{r}
+Dup_error <- read_csv("C:/Users/Admin/Desktop/duplicate_id.csv")
+dup_data<-Dup_error %>% 
+  pivot_longer(cols=2:11, 
+               names_to="Supervisors",
+               values_to="Duplicates")
+
+raw_data_lrp <-read_dta("C:/Survey LRP/Data/Raw_data/Land_Rental_Listing_Survey/Land_Rental_Listing_Survey.dta")
+raw_data_lrp <- as_factor(raw_data_lrp)
+raw_data_lrp <-raw_data_lrp %>% mutate(supervisor=str_replace(supervisor,"Abreham Biru", "AbrehamB"), 
+supervisor=str_replace(supervisor,"Tsegay Berhe", "Tsegay"),
+supervisor=str_replace(supervisor,"Daniel G/Mariam", "Daniel"),
+supervisor=str_replace(supervisor,"Abreham Mekonen", "AbrehamM"),
+supervisor=str_replace(supervisor,"Henok Kefyalew", "Henok"),
+supervisor=str_replace(supervisor,"Getachew Abetu", "Getachew"),
+supervisor=str_replace(supervisor,"Hussen Eshetu", "Hussen"),
+supervisor=str_replace(supervisor,"Siraj Tesfa", "Siraj"),
+supervisor=str_replace(supervisor,"Tamru Shume", "Tamru"),
+supervisor=str_replace(supervisor,"Tamrat Zewdu", "Tamrat"))
+
+raw_data_lrp <- raw_data_lrp %>% filter(hhid!="##N/A##" & hhid!="")
+```
+
+```{r number of interviews by sup}
+AbrehamB <- raw_data_lrp %>% filter(supervisor=="AbrehamB")
+Tsegay <- raw_data_lrp %>% filter(supervisor=="Tsegay")
+Daniel <- raw_data_lrp %>% filter(supervisor=="Daniel")
+AbrehamM <- raw_data_lrp %>% filter(supervisor=="AbrehamM")
+Henok <- raw_data_lrp %>% filter(supervisor=="Henok")
+Getachew <- raw_data_lrp %>% filter(supervisor=="Getachew")
+Siraj <- raw_data_lrp %>% filter(supervisor=="Siraj")
+Hussen <- raw_data_lrp %>% filter(supervisor=="Hussen")
+Tamru <- raw_data_lrp %>% filter(supervisor=="Tamru")
+Tamrat <- raw_data_lrp %>% filter(supervisor=="Tamrat")
+```
+
+```{r number of interviews by woreda}
+Aleta_Chuko <- raw_data_lrp %>% filter(woreda=="Aleta Chuko")
+Bilate_Zuria <- raw_data_lrp %>% filter(woreda=="Bilate Zuria")
+Borecha <- raw_data_lrp %>% filter(woreda=="Borecha")
+Damot_Woide <- raw_data_lrp %>% filter(woreda=="Damot Woide")
+Darara <- raw_data_lrp %>% filter(woreda=="Darara")
+Doyogena <- raw_data_lrp %>% filter(woreda=="Doyogena")
+Duguna_Fango <- raw_data_lrp %>% filter(woreda=="Duguna Fango")
+Enemor_Ener <- raw_data_lrp %>% filter(woreda=="Enemor Ener")
+Loka_Abaya <- raw_data_lrp %>% filter(woreda=="Loka Abaya")
+Misha <- raw_data_lrp %>% filter(woreda=="Misha")
+M.Badawacho <- raw_data_lrp %>% filter(woreda=="Misrak Badawacho")
+
+```
+
+HOME
+=====================================
+
+Row
+-----------------------------------------------------------------------
+
+### Aleta Chuko
+
+```{r}
+Aleta_Chuko_n <- nrow(Aleta_Chuko)
+valueBox(Aleta_Chuko_n, icon = "")
+```
+
+### Bilate Zuria
+
+```{r}
+Bilate_Zuria_n <- nrow(Bilate_Zuria)
+valueBox(Bilate_Zuria_n, icon = "")
+```
+
+### Borecha
+
+```{r}
+Borecha_n <- nrow(Borecha)
+valueBox(Borecha_n, icon = "")
+
+```
+
+### Damot Woide
+
+```{r}
+Damot_Woide_n <- nrow(Damot_Woide)
+valueBox(Damot_Woide_n, icon = "")
+
+```
+
+### Darara
+
+```{r}
+Darara_n <- nrow(Darara)
+valueBox(Darara_n, icon = "")
+
+```
+
+### Doyogena
+
+```{r}
+Doyogena_n <- nrow(Doyogena)
+valueBox(Doyogena_n, icon = "")
+
+```
+
+### Duguna Fango 
+
+```{r}
+Duguna_Fango_n <- nrow(Duguna_Fango)
+valueBox(Duguna_Fango_n, icon = "")
+```
+
+
+### Enemor Ener 
+
+```{r}
+Enemor_Ener_n <- nrow(Enemor_Ener)
+valueBox(Enemor_Ener_n, icon = "")
+```
+
+### Loka Abaya
+
+```{r}
+Loka_Abaya_n <- nrow(Loka_Abaya)
+valueBox(Loka_Abaya_n, icon = "")
+```
+
+### Misha
+
+```{r}
+Misha_n <- nrow(Misha)
+valueBox(Misha_n, icon = "")
+```
+
+### Misrak Badawacho
+
+```{r}
+M.Badawacho_n <- nrow(M.Badawacho)
+valueBox(M.Badawacho_n, icon = "")
+```
+
+### TOTAL
+
+```{r}
+total_n <- nrow(raw_data_lrp)
+valueBox(total_n, icon = "", color="Orange")
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Duplicate Status By Supervisors
+
+```{r}
+ dup_data %>% select('Report_date', 'Supervisors', 'Duplicates') %>% 
+  dplyr::arrange(Report_date) %>% 
+  hchart('spline', hcaes(x = 'Report_date', y = 'Duplicates', group = "Supervisors"))
+
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+###  WOREDA EXPECTED vs SYNC
+
+```{r woreda expected}
+woreda <- c("Aleta Chuko", 	"Bilate Zuria", 	"Borecha", 	"Damot Woide", 	"Darara", 	"Doyogena", 	"Duguna Fango", 	"Enemor Ener", 	"Loka Abaya", 	"Misha", 	"Misrak Badawacho")
+Expected <- c(3950,	1577,	2275,	1834,	1465,	1149,	2319,	3595,	3091,	1552,	2183)
+woreda_exp_df <- data.frame(woreda, Expected)%>% arrange(Expected)
+
+woreda_act <- raw_data_lrp %>% group_by(woreda) %>% dplyr::summarise(count = n()) %>% arrange(count)
+
+woreda_act$woreda<- factor(woreda_act$woreda, levels=woreda_act[["woreda"]])
+
+woreda_merge_df <- inner_join(x = woreda_act, y = woreda_exp_df, by="woreda")
+
+#plot fig
+fig2 <- woreda_merge_df %>% plot_ly()
+fig2 <- fig2 %>% add_trace(x = ~woreda, y = ~count, type = 'bar',  name = 'Actual synced', marker = list(color = '#FFBF00'))
+fig2 <- fig2 %>% add_trace(x = ~woreda, y = ~Expected, type = 'bar', name = 'Expected data', marker = list(color = '#2B3A55'))
+fig2 <- fig2 %>% layout(xaxis = list(title = ''), barmode = 'group')          
+fig2 <- fig2 %>% layout(yaxis = list(title = 'n'), barmode = 'group')
+
+fig2
+```
+
+### SYNCED DATA BY SUPERVISOR
+
+```{r}
+# baseline_by_kebele$kebele<- factor(baseline_by_kebele$kebele, levels=baseline_by_kebele[["kebele"]])
+data_sync_by_sup <- raw_data_lrp %>% select ('supervisor') %>% 
+  group_by(supervisor) %>% dplyr::summarise(count = n()) %>% drop_na() %>%
+  arrange(count)
+
+data_sync_by_sup$supervisor<- factor(data_sync_by_sup$supervisor, levels=data_sync_by_sup[["supervisor"]])
+
+#plot
+fig5 <- data_sync_by_sup %>% plot_ly()
+fig5 <- fig5 %>% add_trace(x = ~supervisor, y = ~count, type = 'bar',  name = 'Synced data', marker = list(color = '#2B3A55'))
+
+fig5 <- fig5 %>% layout(xaxis = list(title = ''), yaxis = list(title = 'n'), barmode = 'coloumn')          
+
+
+fig5
+```
+
