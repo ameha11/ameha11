@@ -1,5 +1,5 @@
 ---
-title: "LRP Household Listing Duplicates"
+title: "LRP Household Listing Status"
 output: 
   flexdashboard::flex_dashboard:
     orientation: row
@@ -171,7 +171,7 @@ valueBox(total_n, icon = "", color="Orange")
 Column {data-width=650}
 -----------------------------------------------------------------------
 
-### Duplicate Status By Supervisors
+### DUPLICATE STATUS BY SUPERVISOR
 
 ```{r}
  dup_data %>% select('Report_date', 'Supervisors', 'Duplicates') %>% 
@@ -222,7 +222,7 @@ fig5 <- fig5 %>% add_trace(x = ~supervisor, y = ~count, type = 'bar',  name = 'S
 
 fig5 <- fig5 %>% layout(xaxis = list(title = ''), yaxis = list(title = 'n'), barmode = 'coloumn')          
 
-
 fig5
 ```
+
 
