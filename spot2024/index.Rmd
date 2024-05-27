@@ -1,0 +1,622 @@
+---
+title: "SPOTCHECK Dashbord 2024"
+output: 
+  flexdashboard::flex_dashboard:
+    vertical_layout: scroll
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(haven)
+library(plyr)
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(highcharter)
+library(plotly)
+library(DT)
+library(stringr)
+library(ggplot2)
+library(viridis)
+library(hrbrthemes)
+library(knitr)
+library(chattr)
+
+
+```
+
+```{r}
+#chattr_app()
+```
+
+```{r}
+#Import HH data
+hh<-read_dta("C:/Survey Spotcheck III/Data/Data Analysis/Transformed_hh.dta")
+hh <- as_factor(hh) 
+hh <- hh %>% mutate(region = str_replace(region,"Dire Dawa", "DD"),region = str_replace(region,"South Ethiopia", "SE"), region = str_replace(region,"Central Ethiopia", "CE"),region = str_replace(region,"South West Ethiopia", "SWE"))
+
+keb<-read_dta("C:/Survey Spotcheck III/Data/Data Analysis/Transformed_kebele.dta")
+keb <- as_factor(keb)
+keb <- keb %>% mutate(region = str_replace(region,"Dire Dawa", "DD"),region = str_replace(region,"South Ethiopia", "SE"), region = str_replace(region,"Central Ethiopia", "CE"),region = str_replace(region,"South West Ethiopia", "SWE"))
+```
+
+HOUSEHOLD {data-orientation=rows}
+=====================================
+
+```{r}
+# Woreda Offices
+PW <- hh %>% filter(psnp_type=="PWs") %>% nrow()
+PDS<-hh %>% filter(psnp_type=="PDS" ) %>% nrow()
+TDS <-hh %>% filter(psnp_type=="TDS" ) %>% nrow()
+HH_total <- PW + PDS + TDS
+```
+
+## Row 1  {data-height=100}
+
+### PW
+
+```{r fig.width=4}
+valueBox(PW, icon = "", color="#ced4da")
+```
+
+### PDS {.no-padding}
+
+```{r fig.width=4}
+
+valueBox(PDS, icon = "", color="#ced4da")
+```
+
+### TDS {.no-padding}
+
+```{r fig.width=4}
+
+valueBox(TDS, icon = "", color="#ced4da")
+```
+
+### TOTAL {.no-padding}
+
+```{r fig.width=4}
+
+valueBox(HH_total, icon = "", color="#fca311")
+```
+
+Column {.tabset .tabset-fade data-width=600}
+-------------------------------------
+
+### viz 1 {data-height=600}
+
+```{r results='hide'}
+
+s7 <- hh %>%
+  filter(pws == 1 | tds==1) %>%
+  group_by(region) %>%
+  summarise(
+  mean_Part_pw = mean(Part_pw, na.rm = TRUE)) 
+
+  format(round(s7$mean_Part_pw, 2), nsmall = 2)
+
+  s7$mean_Part_pw = s7$mean_Part_pw*100
+  
+s8_s12 <- hh %>%
+  filter(pws == 1 & Part_pw == 1) %>%
+  group_by(region) %>%
+  summarise(
+    mean_Part_pwF = mean(Part_pwF, na.rm = TRUE),
+    mean_Part_pwF_flex = mean(Part_pwF_flex, na.rm = TRUE),
+    mean_Fem_preg = mean(Fem_preg, na.rm = TRUE),
+    mean_Fem_bf = mean(Fem_bf, na.rm = TRUE)
+  )
+
+format(round(s8_s12$mean_Part_pwF, 2), nsmall = 2)
+s8_s12$mean_Part_pwF = s8_s12$mean_Part_pwF*100
+
+format(round(s8_s12$mean_Part_pwF_flex, 2), nsmall = 2)
+s8_s12$mean_Part_pwF_flex = s8_s12$mean_Part_pwF_flex*100
+
+format(round(s8_s12$mean_Fem_preg, 2), nsmall = 2)
+s8_s12$mean_Fem_preg = s8_s12$mean_Fem_preg*100
+
+format(round(s8_s12$mean_Fem_bf, 2), nsmall = 2)
+s8_s12$mean_Fem_bf = s8_s12$mean_Fem_bf*100
+
+hh_car_data <- inner_join(x = s7, y = s8_s12, by="region")
+```
+
+```{r }
+# plot 1
+receive_plot <- plot_ly(hh_car_data, x = ~region, y = ~mean_Part_pw, type = 'bar', name = 'PWS and TDS HHs having Person in PWs currently', marker = list(color = '#06d6a0'))
+receive_plot <- receive_plot %>% add_trace(y = ~mean_Part_pwF, name = 'PWS HHs with female in PWs, and was given light work', marker = list(color = '#219ebc'))
+receive_plot <- receive_plot %>% add_trace(y = ~mean_Part_pwF_flex, name = 'PWS HHs with female in PWs, and had flexible working hours', marker = list(color = '#669bbc'))
+receive_plot <- receive_plot %>% add_trace(y = ~mean_Fem_preg, name = 'PWS HHs with female currently pregnant', marker = list(color = '#fca311'))
+receive_plot <- receive_plot %>% add_trace(y = ~mean_Fem_bf, name = 'PWS HHs with female breastfeeding a child under 2 years old', marker = list(color = '#e76f51'))
+
+receive_plot <- receive_plot %>% layout(
+  title = list(text = 'Key household characteristics by region', x = 0.1),
+  xaxis = list(title = ''),
+  yaxis = list(title = 'Percent', ticksuffix = '%'),
+  barmode = 'group',
+  showlegend = TRUE,
+  legend = list(x = 1, y = 1),
+  #legend = list(orientation = 'h'),
+  margin = list(l = 50, r = 50, t = 50, b = 50),
+  annotations = list(
+   
+  )
+)
+
+receive_plot
+```
+
+
+
+
+## Row 2 {data-height=10}
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### { data-height=350}
+
+
+```{r results='hide'}
+s2_1a <- hh %>%
+  group_by(region) %>%
+  summarise(
+  mean_received_card = mean(received_card, na.rm = TRUE)) 
+
+  format(round(s2_1a$mean_received_card, 2), nsmall = 2)
+
+  s2_1a$mean_received_card = s2_1a$mean_received_card *100
+
+```
+
+```{r }
+
+received_card_plot <- plot_ly(s2_1a, labels = ~region,  values= ~mean_received_card, type = 'pie')
+
+received_card_plot <- received_card_plot %>% layout(title = 'HH received a client card for the PSNP in the last 12 months',
+                      xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+                      yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+
+
+received_card_plot
+```
+
+
+### {.no-padding data-height=350}
+
+```{r results='hide'}
+s2_4 <- hh %>%
+  group_by(region) %>%
+  summarise(
+    mean_receive_tansf0_10 = mean(receive_tansf0_10, na.rm = TRUE),
+    mean_receive_tansf11_30 = mean(receive_tansf11_30, na.rm = TRUE),
+    mean_receive_tansf31_45 = mean(receive_tansf31_45, na.rm = TRUE),
+    mean_receive_tansfAny = mean(receive_tansfAny, na.rm = TRUE)
+  )
+
+format(round(s2_4$mean_receive_tansf0_10, 2), nsmall = 2)
+s2_4$mean_receive_tansf0_10 = s2_4$mean_receive_tansf0_10*100
+
+format(round(s2_4$mean_receive_tansf11_30, 2), nsmall = 2)
+s2_4$mean_receive_tansf11_30 = s2_4$mean_receive_tansf11_30*100
+
+format(round(s2_4$mean_receive_tansf31_45, 2), nsmall = 2)
+s2_4$mean_receive_tansf31_45 = s2_4$mean_receive_tansf31_45*100
+
+format(round(s2_4$mean_receive_tansfAny, 2), nsmall = 2)
+s2_4$mean_receive_tansfAny = s2_4$mean_receive_tansfAny*100
+
+
+```
+
+```{r }
+# plot 1
+s2_4_plot <- plot_ly(s2_4, x = ~region, y = ~mean_receive_tansf0_10, type = 'bar', name = '0-10 days after the end of the month or end of the month of PW', marker = list(color = '#06d6a0'))
+s2_4_plot <- s2_4_plot %>% add_trace(y = ~mean_receive_tansf11_30, name = '11- 30 days after the end of the month or end of the month of PW', marker = list(color = '#219ebc'))
+s2_4_plot <- s2_4_plot %>% add_trace(y = ~mean_receive_tansf31_45, name = '31-45 days after the end of the month or end of the month of PW', marker = list(color = '#669bbc'))
+s2_4_plot <- s2_4_plot %>% add_trace(y = ~mean_receive_tansf31_45, name = 'Anytime. There is no time established for making transfers.', marker = list(color = '#e76f51'))
+
+
+s2_4_plot <- s2_4_plot %>% layout(
+  title = list(text = 'Time to receive PSNP transfers', x = 0.1),
+  xaxis = list(title = ''),
+  yaxis = list(title = 'Percent', ticksuffix = '%'),
+  barmode = 'stack',
+  showlegend = TRUE,
+  legend = list(orientation = 'h'),
+  margin = list(l = 50, r = 50, t = 50, b = 50),
+  annotations = list(
+   
+  )
+)
+s2_4_plot
+```
+
+## Row 3 {data-height=10}
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### { data-height=350}
+
+```{r results='hide'}
+ s2_5_1<- hh %>%
+  filter(pws == 1 | tds==1) %>%
+  group_by(region) %>%
+  summarise(
+    mean_no_tansfYR4 = mean(no_tansfYR4 , na.rm = TRUE),
+    mean_no_tansfYR6 = mean(no_tansfYR6, na.rm = TRUE),
+    mean_no_tansfYR10 = mean(no_tansfYR10, na.rm = TRUE),
+    mean_no_tansfYR12 = mean(no_tansfYR12, na.rm = TRUE)
+  )
+
+format(round( s2_5_1$mean_no_tansfYR4 , 2), nsmall = 2)
+ s2_5_1$mean_no_tansfYR4  =  s2_5_1$mean_no_tansfYR4 *100
+
+format(round( s2_5_1$mean_no_tansfYR6, 2), nsmall = 2)
+ s2_5_1$mean_no_tansfYR6 =  s2_5_1$mean_no_tansfYR6*100
+
+format(round( s2_5_1$mean_no_tansfYR10, 2), nsmall = 2)
+ s2_5_1$mean_no_tansfYR10 =  s2_5_1$mean_no_tansfYR10*100
+
+format(round( s2_5_1$mean_no_tansfYR12, 2), nsmall = 2)
+ s2_5_1$mean_no_tansfYR12 =  s2_5_1$mean_no_tansfYR12*100
+
+```
+
+```{r }
+#
+s2_5_1_plot<- plot_ly(s2_5_1, x = ~region, y = ~mean_no_tansfYR4, type = 'bar', name = '4 transfers per year
+', marker = list(color = '#06d6a0'))
+s2_5_1_plot <- s2_5_1_plot %>% add_trace(y = ~mean_no_tansfYR6, name = '6 transfers per year', marker = list(color = '#219ebc'))
+s2_5_1_plot <- s2_5_1_plot %>% add_trace(y = ~mean_no_tansfYR10, name = '10 transfers per year', marker = list(color = '#669bbc'))
+s2_5_1_plot <- s2_5_1_plot %>% add_trace(y = ~mean_no_tansfYR12, name = '12 transfers per year', marker = list(color = '#fca311'))
+
+
+s2_5_1_plot <- s2_5_1_plot %>% layout(
+  title = list(text = 'Number of PSNP transfers PWS and TDS HHs supposed to receive per year', x = 0.1),
+  xaxis = list(title = ''),
+  yaxis = list(title = 'Percent', ticksuffix = '%'),
+  barmode = 'stack',
+  showlegend = TRUE,
+  legend = list(orientation = 'h'),
+  margin = list(l = 50, r = 50, t = 50, b = 50),
+  annotations = list(
+   
+  )
+)
+s2_5_1_plot
+```
+
+### { data-height=350}
+
+
+```{r results='hide'}
+ s2_5_2<- hh %>%
+  filter(pds==1) %>%
+  group_by(region) %>%
+  summarise(
+    mean_no_tansfYR4_ = mean(no_tansfYR4 , na.rm = TRUE),
+    mean_no_tansfYR6_ = mean(no_tansfYR6, na.rm = TRUE),
+    mean_no_tansfYR10_ = mean(no_tansfYR10, na.rm = TRUE),
+    mean_no_tansfYR12_ = mean(no_tansfYR12, na.rm = TRUE)
+  )
+
+format(round( s2_5_2$mean_no_tansfYR4_ , 2), nsmall = 2)
+ s2_5_2$mean_no_tansfYR4_  =  s2_5_2$mean_no_tansfYR4_ *100
+
+format(round( s2_5_2$mean_no_tansfYR6_, 2), nsmall = 2)
+ s2_5_2$mean_no_tansfYR6_ =  s2_5_2$mean_no_tansfYR6_ *100
+
+format(round( s2_5_2$mean_no_tansfYR10_, 2), nsmall = 2)
+ s2_5_1$mean_no_tansfYR10_ =  s2_5_2$mean_no_tansfYR10_ *100
+
+format(round( s2_5_2$mean_no_tansfYR12_, 2), nsmall = 2)
+ s2_5_2$mean_no_tansfYR12_ =  s2_5_2$mean_no_tansfYR12_ *100
+
+```
+
+```{r}
+s2_5_2_plot<- plot_ly(s2_5_2, x = ~region, y = ~mean_no_tansfYR4_, type = 'bar', name = '4 transfers per year', marker = list(color = '#03045e'))
+s2_5_2_plot <- s2_5_2_plot %>% add_trace(y = ~mean_no_tansfYR6_, name = '6 transfers per year', marker = list(color = '#0077b6'))
+s2_5_2_plot <- s2_5_2_plot %>% add_trace(y = ~mean_no_tansfYR10_, name = '10 transfers per year', marker = list(color = '#00b4d8'))
+s2_5_2_plot <- s2_5_2_plot %>% add_trace(y = ~mean_no_tansfYR12_, name = '12 transfers per year', marker = list(color = '#90e0ef'))
+
+s2_5_2_plot <- s2_5_2_plot %>% layout(
+  title = list(text = 'Number of PSNP transfers PDS HHs supposed to receive per year', x = 0.1),
+  xaxis = list(title = ''),
+  yaxis = list(title = 'Percent', ticksuffix = '%'),
+  barmode = 'stack',
+  showlegend = TRUE,
+  legend = list(orientation = 'h'),
+  margin = list(l = 50, r = 50, t = 50, b = 50),
+  annotations = list(
+   
+  )
+)
+s2_5_2_plot
+```
+
+## Row 4 {data-height=10}
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### { data-height=350}
+```{r results='hide'}
+
+s2_5b_1 <- hh %>%
+  filter(pws==1 | tds==1) %>%
+  group_by(region) %>%
+  summarise(
+    mean_no_actualTra2016_1= mean(no_actualTra2016, na.rm = TRUE)
+      )
+format(round( s2_5b_1$mean_no_actualTra2016_1 , 2), nsmall = 2)
+
+
+s2_5b_2 <- hh %>%
+  filter(pds==1) %>%
+  group_by(region) %>%
+  summarise(
+    mean_no_actualTra2016_2= mean(no_actualTra2016, na.rm = TRUE)
+      )
+
+format(round( s2_5b_2$mean_no_actualTra2016_2 , 2), nsmall = 2 )
+
+s2_5b_join <- inner_join(x = s2_5b_1, y = s2_5b_2 , by="region")
+```
+
+```{r }
+s2_5b_plot <- plot_ly(s2_5b_join, x = ~region, y = ~mean_no_actualTra2016_1, type = 'bar', name = 'Average number of monthly PSNP transfers PWS and TDS HHs received this EFY  2016', marker = list(color = '#06d6a0'))
+s2_5b_plot <- s2_5b_plot %>% add_trace(y = ~mean_no_actualTra2016_2, name = 'Average number of monthly PSNP transfers PDS HHs received this EFY  2016', marker = list(color = '#219ebc'))
+
+
+s2_5b_plot <- s2_5b_plot %>% layout(
+  title = list(text = 'Frequency of PSNP transfer received in EFY 2016', x = 0.1),
+  xaxis = list(title = ''),
+  yaxis = list(title = 'n'),
+  barmode = 'group',
+  showlegend = TRUE,
+  #legend = list(x = 1, y = 1),
+  legend = list(orientation = 'h'),
+  margin = list(l = 50, r = 50, t = 50, b = 50),
+  annotations = list(
+   
+  )
+)
+s2_5b_plot
+```
+
+### { data-height=350}
+
+```{r results='hide'}
+   
+s2_6a_1 <- hh %>%
+  filter(pws == 1 & Part_pw == 1) %>%
+  group_by(region) %>%
+  summarise(
+    mean_lastTr_thisMonth = mean(lastTr_thisMonth , na.rm = TRUE),
+    mean_lastTr_lastMonth  = mean(lastTr_lastMonth , na.rm = TRUE),
+    mean_lastTr_2MonthAgo = mean(lastTr_2MonthAgo, na.rm = TRUE),
+    mean_lastTr_3MonthAgo = mean(lastTr_3MonthAgo, na.rm = TRUE),
+    mean_lastTr_4MoreMonthAgo = mean(lastTr_4MoreMonthAgo, na.rm = TRUE),
+  )
+format(round(s2_6a_1$mean_lastTr_thisMonth, 2), nsmall = 2)
+s2_6a_1$mean_lastTr_thisMonth = s2_6a_1$mean_lastTr_thisMonth *100
+
+format(round(s2_6a_1$mean_lastTr_lastMonth, 2), nsmall = 2)
+s2_6a_1$mean_lastTr_lastMonth = s2_6a_1$mean_lastTr_lastMonth *100
+
+format(round(s2_6a_1$mean_lastTr_2MonthAgo, 2), nsmall = 2)
+s2_6a_1$mean_lastTr_2MonthAgo = s2_6a_1$mean_lastTr_2MonthAgo *100
+
+format(round(s2_6a_1$mean_lastTr_3MonthAgo, 2), nsmall = 2)
+s2_6a_1$mean_lastTr_3MonthAgo = s2_6a_1$mean_lastTr_3MonthAgo *100
+
+format(round(s2_6a_1$mean_lastTr_4MoreMonthAgo, 2), nsmall = 2)
+s2_6a_1$mean_lastTr_4MoreMonthAgo = s2_6a_1$mean_lastTr_4MoreMonthAgo *100
+
+
+
+s2_6a_2 <- hh %>%
+  filter(pds == 1) %>%
+  group_by(region) %>%
+  summarise(
+    mean_lastTr_thisMonth_ = mean(lastTr_thisMonth , na.rm = TRUE),
+    mean_lastTr_lastMonth_  = mean(lastTr_lastMonth , na.rm = TRUE),
+    mean_lastTr_2MonthAgo_ = mean(lastTr_2MonthAgo, na.rm = TRUE),
+    mean_lastTr_3MonthAgo_ = mean(lastTr_3MonthAgo, na.rm = TRUE),
+    mean_lastTr_4MoreMonthAgo_ = mean(lastTr_4MoreMonthAgo, na.rm = TRUE),
+  )
+format(round(s2_6a_2$mean_lastTr_thisMonth_, 2), nsmall = 2)
+s2_6a_2$mean_lastTr_thisMonth_ = s2_6a_2$mean_lastTr_thisMonth_ *100
+
+format(round(s2_6a_2$mean_lastTr_lastMonth_, 2), nsmall = 2)
+s2_6a_2$mean_lastTr_lastMonth_ = s2_6a_2$mean_lastTr_lastMonth_ *100
+
+format(round(s2_6a_2$mean_lastTr_2MonthAgo_, 2), nsmall = 2)
+s2_6a_2$mean_lastTr_2MonthAgo_ = s2_6a_2$mean_lastTr_2MonthAgo_ *100
+
+format(round(s2_6a_2$mean_lastTr_3MonthAgo_, 2), nsmall = 2)
+s2_6a_2$mean_lastTr_3MonthAgo_ = s2_6a_2$mean_lastTr_3MonthAgo_ *100
+
+format(round(s2_6a_2$mean_lastTr_4MoreMonthAgo_, 2), nsmall = 2)
+s2_6a_2$mean_lastTr_4MoreMonthAgo_ = s2_6a_2$mean_lastTr_4MoreMonthAgo_ *100
+
+
+s2_6a_join <- inner_join(x = s2_6a_1, y = s2_6a_2, by="region")
+```
+
+```{r}
+
+s2_6a_join_plot1 <- plot_ly(s2_6a_join, x = ~region, y = ~mean_lastTr_thisMonth, type = 'bar', name = 'This Month', marker = list(color = '#231942'))
+s2_6a_join_plot1 <- s2_6a_join_plot1 %>% add_trace(y = ~mean_lastTr_lastMonth, name = 'Last month', marker = list(color = '#5e548e'))
+s2_6a_join_plot1 <- s2_6a_join_plot1 %>% add_trace(y = ~mean_lastTr_2MonthAgo, name = 'Two months ago', marker = list(color = '#e0b1cb'))
+s2_6a_join_plot1 <- s2_6a_join_plot1 %>% add_trace(y = ~mean_lastTr_3MonthAgo, name = 'Three months ago', marker = list(color = '#fca311'))
+s2_6a_join_plot1 <- s2_6a_join_plot1 %>% add_trace(y = ~mean_lastTr_4MoreMonthAgo, name = 'Four or more months ago', marker = list(color = '#e76f51'))
+
+s2_6a_join_plot1 <- s2_6a_join_plot1 %>% layout(
+  title = list(text = 'Time PWS and TDS HHs received last PSNP transfers', x = 0.1),
+  xaxis = list(title = ''),
+  yaxis = list(title = 'Percent', ticksuffix = '%'),
+  barmode = 'stack',
+  showlegend = TRUE,
+  #legend = list(x = 1, y = 1),
+  legend = list(orientation = 'h'),
+  margin = list(l = 50, r = 50, t = 50, b = 50),
+  annotations = list(
+   
+  )
+)
+
+s2_6a_join_plot1
+```
+
+## Row 5 {data-height=10}
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### { data-height=350}
+```{r}
+
+s2_6a_join_plot2 <- plot_ly(s2_6a_join, x = ~region, y = ~mean_lastTr_thisMonth_, type = 'bar', name = 'This Month', marker = list(color = '#231942'))
+s2_6a_join_plot2 <- s2_6a_join_plot2 %>% add_trace(y = ~mean_lastTr_lastMonth_, name = 'Last month', marker = list(color = '#5e548e'))
+s2_6a_join_plot2 <- s2_6a_join_plot2 %>% add_trace(y = ~mean_lastTr_2MonthAgo_, name = 'Two months ago', marker = list(color = '#e0b1cb'))
+s2_6a_join_plot2 <- s2_6a_join_plot2 %>% add_trace(y = ~mean_lastTr_3MonthAgo_, name = 'Three months ago', marker = list(color = '#fca311'))
+s2_6a_join_plot2 <- s2_6a_join_plot2 %>% add_trace(y = ~mean_lastTr_4MoreMonthAgo_, name = 'Four or more months ago', marker = list(color = '#e76f51'))
+
+s2_6a_join_plot2 <- s2_6a_join_plot2 %>% layout(
+  title = list(text = 'Time PDS HHs received last PSNP transfers', x = 0.1),
+  xaxis = list(title = ''),
+  yaxis = list(title = 'Percent', ticksuffix = '%'),
+  barmode = 'stack',
+  showlegend = TRUE,
+  #legend = list(x = 1, y = 1),
+  legend = list(orientation = 'h'),
+  margin = list(l = 50, r = 50, t = 50, b = 50),
+  annotations = list(
+   
+  )
+)
+
+s2_6a_join_plot2
+```
+
+### { data-height=350}
+
+```{r results='hide'}
+s2_6b_1 <- hh %>%
+  filter(pws == 1 & Part_pw == 1) %>%
+  group_by(region) %>%
+  summarise(
+    mean_nextTr_thisMonth = mean(nextTr_thisMonth , na.rm = TRUE),
+    mean_nextTr_nextMonth  = mean(nextTr_nextMonth , na.rm = TRUE),
+    mean_nextTr_in2Month = mean(nextTr_in2Month, na.rm = TRUE),
+    mean_nextTr_in3orMoreMonth = mean(nextTr_in3orMoreMonth, na.rm = TRUE),
+    mean_nextTr_DonotKonw = mean(nextTr_DonotKonw, na.rm = TRUE),
+  )
+
+format(round(s2_6b_1$mean_nextTr_thisMonth, 2), nsmall = 2)
+s2_6b_1$mean_nextTr_thisMonth = s2_6b_1$mean_nextTr_thisMonth *100
+
+format(round(s2_6b_1$mean_nextTr_nextMonth, 2), nsmall = 2)
+s2_6b_1$mean_nextTr_nextMonth = s2_6b_1$mean_nextTr_nextMonth *100
+
+format(round(s2_6b_1$mean_nextTr_in2Month, 2), nsmall = 2)
+s2_6b_1$mean_nextTr_in2Month = s2_6b_1$mean_nextTr_in2Month *100
+
+format(round(s2_6b_1$mean_nextTr_in3orMoreMonth, 2), nsmall = 2)
+s2_6b_1$mean_nextTr_in3orMoreMonth = s2_6b_1$mean_nextTr_in3orMoreMonth *100
+
+format(round(s2_6b_1$mean_nextTr_DonotKonw, 2), nsmall = 2)
+s2_6b_1$mean_nextTr_DonotKonw = s2_6b_1$mean_nextTr_DonotKonw *100
+
+
+
+s2_6b_2 <- hh %>%
+  filter(pds == 1) %>%
+  group_by(region) %>%
+  summarise(
+    mean_nextTr_thisMonth_ = mean(nextTr_thisMonth , na.rm = TRUE),
+    mean_nextTr_nextMonth_  = mean(nextTr_nextMonth , na.rm = TRUE),
+    mean_nextTr_in2Month_ = mean(nextTr_in2Month, na.rm = TRUE),
+    mean_nextTr_in3orMoreMonth_ = mean(nextTr_in3orMoreMonth, na.rm = TRUE),
+    mean_nextTr_DonotKonw_ = mean(nextTr_DonotKonw, na.rm = TRUE),
+  )
+format(round(s2_6b_2$mean_nextTr_thisMonth_, 2), nsmall = 2)
+s2_6b_2$mean_nextTr_thisMonth_ = s2_6b_2$mean_nextTr_thisMonth_ *100
+
+format(round(s2_6b_2$mean_nextTr_nextMonth_, 2), nsmall = 2)
+s2_6b_2$mean_nextTr_nextMonth_ = s2_6b_2$mean_nextTr_nextMonth_ *100
+
+format(round(s2_6b_2$mean_nextTr_in2Month_, 2), nsmall = 2)
+s2_6b_2$mean_nextTr_in2Month_ = s2_6b_2$mean_nextTr_in2Month_ *100
+
+format(round(s2_6b_2$mean_nextTr_in3orMoreMonth_, 2), nsmall = 2)
+s2_6b_2$mean_nextTr_in3orMoreMonth_ = s2_6b_2$mean_nextTr_in3orMoreMonth_ *100
+
+format(round(s2_6b_2$mean_nextTr_DonotKonw_, 2), nsmall = 2)
+s2_6b_2$mean_nextTr_DonotKonw_ = s2_6b_2$mean_nextTr_DonotKonw_ *100
+
+
+s2_6b_join <- inner_join(x = s2_6b_1, y = s2_6b_2, by="region")
+```
+
+```{r }
+
+s2_6b_join_plot1 <- plot_ly(s2_6b_join, x = ~region, y = ~mean_nextTr_thisMonth, type = 'bar', name = 'This Month', marker = list(color = '#a0fa96'))
+s2_6b_join_plot1 <- s2_6b_join_plot1 %>% add_trace(y = ~mean_nextTr_nextMonth, name = 'Next month', marker = list(color = '#f24b4b'))
+s2_6b_join_plot1 <- s2_6b_join_plot1 %>% add_trace(y = ~mean_nextTr_in2Month, name = 'In two months', marker = list(color = '#f8e16c'))
+s2_6b_join_plot1 <- s2_6b_join_plot1 %>% add_trace(y = ~mean_nextTr_in3orMoreMonth, name = 'In three or more months', marker = list(color = '#131515'))
+s2_6b_join_plot1 <- s2_6b_join_plot1 %>% add_trace(y = ~mean_nextTr_DonotKonw, name = 'Do not know', marker = list(color = '#62c3c8'))
+
+s2_6b_join_plot1 <- s2_6b_join_plot1 %>% layout(
+  title = list(text = 'Time PWS and TDS HHs will receive the next PSNP transfers', x = 0.1),
+  xaxis = list(title = ''),
+  yaxis = list(title = 'Percent', ticksuffix = '%'),
+  barmode = 'group',
+  showlegend = TRUE,
+  #legend = list(x = 1, y = 1),
+  legend = list(orientation = 'h'),
+  margin = list(l = 50, r = 50, t = 50, b = 50),
+  annotations = list(
+   
+  )
+)
+
+s2_6b_join_plot1
+```
+
+## Row 6 {data-height=10}
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### { data-height=350}
+```{r }
+
+s2_6b_join_plot2 <- plot_ly(s2_6b_join, x = ~region, y = ~mean_nextTr_thisMonth_, type = 'bar', name = 'This Month', marker = list(color = '#a0fa96'))
+s2_6b_join_plot2 <- s2_6b_join_plot2 %>% add_trace(y = ~mean_nextTr_nextMonth_, name = 'Next month', marker = list(color = '#f24b4b'))
+s2_6b_join_plot2 <- s2_6b_join_plot2 %>% add_trace(y = ~mean_nextTr_in2Month_, name = 'In two months', marker = list(color = '#f8e16c'))
+s2_6b_join_plot2 <- s2_6b_join_plot2 %>% add_trace(y = ~mean_nextTr_in3orMoreMonth_, name = 'In three or more months', marker = list(color = '#131515'))
+s2_6b_join_plot2 <- s2_6b_join_plot2 %>% add_trace(y = ~mean_nextTr_DonotKonw_, name = 'Do not know', marker = list(color = '#62c3c8'))
+
+s2_6b_join_plot2 <- s2_6b_join_plot2 %>% layout(
+  title = list(text = 'Time PDS HHs will receive the next PSNP transfers', x = 0.1),
+  xaxis = list(title = ''),
+  yaxis = list(title = 'Percent', ticksuffix = '%'),
+  barmode = 'group',
+  showlegend = TRUE,
+  #legend = list(x = 1, y = 1),
+  legend = list(orientation = 'h'),
+  margin = list(l = 50, r = 50, t = 50, b = 50),
+  annotations = list(
+   
+  )
+)
+
+s2_6b_join_plot2
+```
+### { data-height=350}
