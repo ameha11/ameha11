@@ -275,7 +275,7 @@ s2_5_1_plot <- s2_5_1_plot %>% add_trace(y = ~mean_no_tansfYR12, name = '12 tran
 
 
 s2_5_1_plot <- s2_5_1_plot %>% layout(
-  title = list(text = 'Number of PSNP transfers PWS and TDS HHs supposed to receive per year', x = 0.1),
+  title = list(text = 'PSNP transfers PWS and TDS HHs supposed to receive per year', x = 0.1),
   xaxis = list(title = ''),
   yaxis = list(title = 'Percent', ticksuffix = '%'),
   barmode = 'stack',
@@ -324,7 +324,7 @@ s2_5_2_plot <- s2_5_2_plot %>% add_trace(y = ~mean_no_tansfYR10_, name = '10 tra
 s2_5_2_plot <- s2_5_2_plot %>% add_trace(y = ~mean_no_tansfYR12_, name = '12 transfers per year', marker = list(color = '#90e0ef'))
 
 s2_5_2_plot <- s2_5_2_plot %>% layout(
-  title = list(text = 'Number of PSNP transfers PDS HHs supposed to receive per year', x = 0.1),
+  title = list(text = 'PSNP transfers PDS HHs supposed to receive per year', x = 0.1),
   xaxis = list(title = ''),
   yaxis = list(title = 'Percent', ticksuffix = '%'),
   barmode = 'stack',
